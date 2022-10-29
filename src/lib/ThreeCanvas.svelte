@@ -12,7 +12,9 @@
             0.01,
             10
         );
-        camera.position.z = 1;
+        camera.position.z = 0.5;
+        camera.position.y = 0.5;
+        camera.position.x = 0.5;
 
         const scene = new THREE.Scene();
 
@@ -29,20 +31,19 @@
         renderer.setAnimationLoop(animation);
 
         const resize = () => {
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            camera.aspect = window.innerWidth / window.innerHeight;
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            renderer.setSize(canvas.offsetWidth, canvas.offsetHeight, false);
+            camera.aspect = canvas.offsetWidth / canvas.offsetHeight;
             camera.updateProjectionMatrix();
         };
         window.addEventListener("resize", resize);
         resize();
 
-        const controls = new OrbitControls(camera, canvas);
+        const controls = new OrbitControls(camera, renderer.domElement);
 
         // animation
         function animation(time) {
-            mesh.rotation.x = time / 2000;
-            mesh.rotation.y = time / 1000;
-
             renderer.render(scene, camera);
         }
     });
@@ -52,9 +53,7 @@
 
 <style>
     canvas {
-        position: fixed;
-        top: 0;
-        left: 0;
-        z-index: -1;
+        width: 100%;
+        height: 100vh;
     }
 </style>
