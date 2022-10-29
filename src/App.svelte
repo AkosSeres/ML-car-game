@@ -1,5 +1,6 @@
 <script>
   import ThreeCanvas from "./lib/ThreeCanvas.svelte";
+  import Tabs from "./lib/Tabs.svelte";
 </script>
 
 <main>
@@ -7,7 +8,7 @@
     <ThreeCanvas />
   </div>
   <div id="menu-pane">
-    <div class="card">Initial content!</div>
+    <Tabs />
   </div>
 </main>
 
