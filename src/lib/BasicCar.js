@@ -2,6 +2,8 @@ import * as THREE from "three";
 import * as CANNON from "cannon-es";
 import { GameObject } from "./GameObject";
 
+export const CAR_COLLISION_FILTER_GROUP = 8;
+
 export class BasicCar extends GameObject {
     constructor(x, y, z, material, wheelMaterial, mass = 1, wheelFriction = 0.25, wheelRestitution = 0.1) {
         super();
@@ -18,7 +20,7 @@ export class BasicCar extends GameObject {
         carBodyMesh.updateMatrix();
         this.meshes.push(carBodyMesh);
         const carBodyShape = new CANNON.Box(new CANNON.Vec3(0.05, 0.05, 0.1));
-        const carBody = new CANNON.Body({ mass: mass / 2 });
+        const carBody = new CANNON.Body({ mass: mass / 2, collisionFilterGroup: CAR_COLLISION_FILTER_GROUP, collisionFilterMask: ~CAR_COLLISION_FILTER_GROUP });
         carBody.addShape(carBodyShape);
         carBody.position.x = carBodyMesh.position.x;
         carBody.position.y = carBodyMesh.position.y;
@@ -39,6 +41,8 @@ export class BasicCar extends GameObject {
         const wheelLFBody = new CANNON.Body({
             mass: mass / 8,
             material: wheelPhyMaterial,
+            collisionFilterGroup: CAR_COLLISION_FILTER_GROUP,
+            collisionFilterMask: ~CAR_COLLISION_FILTER_GROUP
         });
         wheelLFBody.addShape(wheelLFShape);
         wheelLFBody.position.x = wheelLFMesh.position.x;
@@ -60,6 +64,8 @@ export class BasicCar extends GameObject {
         const wheelRFBody = new CANNON.Body({
             mass: 1,
             material: wheelPhyMaterial,
+            collisionFilterGroup: CAR_COLLISION_FILTER_GROUP,
+            collisionFilterMask: ~CAR_COLLISION_FILTER_GROUP
         });
         wheelRFBody.addShape(wheelRFShape);
         wheelRFBody.position.x = wheelRFMesh.position.x;
@@ -81,6 +87,8 @@ export class BasicCar extends GameObject {
         const wheelLBBody = new CANNON.Body({
             mass: 1,
             material: wheelPhyMaterial,
+            collisionFilterGroup: CAR_COLLISION_FILTER_GROUP,
+            collisionFilterMask: ~CAR_COLLISION_FILTER_GROUP
         });
         wheelLBBody.addShape(wheelLBShape);
         wheelLBBody.position.x = wheelLBMesh.position.x;
@@ -102,6 +110,8 @@ export class BasicCar extends GameObject {
         const wheelRBBody = new CANNON.Body({
             mass: 1,
             material: wheelPhyMaterial,
+            collisionFilterGroup: CAR_COLLISION_FILTER_GROUP,
+            collisionFilterMask: ~CAR_COLLISION_FILTER_GROUP
         });
         wheelRBBody.addShape(wheelRBShape);
         wheelRBBody.position.x = wheelRBMesh.position.x;
