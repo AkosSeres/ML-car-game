@@ -3,9 +3,10 @@
     import { onMount } from "svelte";
     import { BoxObject, SphereObject } from "./GameObject";
     import { GameWorld } from "./GameWorld";
-    import { BasicCar } from "./BasicCar";
+    import { BasicCar, CAR_COLLISION_FILTER_GROUP } from "./BasicCar";
 
     let canvas;
+    /** @type {GameWorld} */
     let gameWorld;
 
     onMount(() => {
@@ -56,6 +57,18 @@
             0.1
         );
         gameWorld.addGameObject(car);
+
+        const arrowHelpers = car.getRays().map((ray) => {
+            const dir = ray.direction;
+            dir.normalize();
+            const origin = ray.from;
+            const length = ray.to.vsub(ray.from).length();
+            const hex = 0xffff00;
+            const arrowHelper = new THREE.ArrowHelper(dir, origin, length, hex);
+            gameWorld.scene.add(arrowHelper);
+            return arrowHelper;
+        });
+
         let W = false,
             A = false,
             S = false,
@@ -102,6 +115,23 @@
 
         const applyInput = () => {
             car.applyInput(W, A, S, D, SPACE);
+
+            car.getRays().forEach((ray, idx) => {
+                ray.intersectWorld(gameWorld.world, {
+                    checkCollisionResponse: false,
+                    skipBackfaces: true,
+                    collisionFilterMask: ~CAR_COLLISION_FILTER_GROUP,
+                });
+                const result = ray.result;
+                const arrowHelper = arrowHelpers[idx];
+                arrowHelper.setDirection(ray.direction);
+                if (result.distance === -1) arrowHelper.setLength(1);
+                else arrowHelper.setLength(result.distance);
+                arrowHelper.position.x = ray.from.x;
+                arrowHelper.position.y = ray.from.y;
+                arrowHelper.position.z = ray.from.z;
+            });
+
             window.requestAnimationFrame(applyInput);
         };
         window.requestAnimationFrame(applyInput);

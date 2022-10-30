@@ -19,6 +19,7 @@ export class BasicCar extends GameObject {
         carBodyMesh.position.z = z;
         carBodyMesh.updateMatrix();
         this.meshes.push(carBodyMesh);
+        this.carBodyMesh = carBodyMesh;
         const carBodyShape = new CANNON.Box(new CANNON.Vec3(0.05, 0.05, 0.1));
         const carBody = new CANNON.Body({ mass: mass / 2, collisionFilterGroup: CAR_COLLISION_FILTER_GROUP, collisionFilterMask: ~CAR_COLLISION_FILTER_GROUP });
         carBody.addShape(carBodyShape);
@@ -37,6 +38,7 @@ export class BasicCar extends GameObject {
         wheelLFMesh.position.y = -0.05 + carBodyMesh.position.y;
         wheelLFMesh.position.z = -0.1 + carBodyMesh.position.z;
         this.meshes.push(wheelLFMesh);
+        this.wheelLFMesh = wheelLFMesh;
         const wheelLFShape = new CANNON.Sphere(0.033);
         const wheelLFBody = new CANNON.Body({
             mass: mass / 8,
@@ -60,6 +62,7 @@ export class BasicCar extends GameObject {
         wheelRFMesh.position.y = -0.05 + carBodyMesh.position.y;
         wheelRFMesh.position.z = -0.1 + carBodyMesh.position.z;
         this.meshes.push(wheelRFMesh);
+        this.wheelRFMesh = wheelRFMesh;
         const wheelRFShape = new CANNON.Sphere(0.033);
         const wheelRFBody = new CANNON.Body({
             mass: 1,
@@ -83,6 +86,7 @@ export class BasicCar extends GameObject {
         wheelLBMesh.position.y = -0.05 + carBodyMesh.position.y;
         wheelLBMesh.position.z = 0.1 + carBodyMesh.position.z;
         this.meshes.push(wheelLBMesh);
+        this.wheelLBMesh = wheelLBMesh;
         const wheelLBShape = new CANNON.Sphere(0.04);
         const wheelLBBody = new CANNON.Body({
             mass: 1,
@@ -106,6 +110,7 @@ export class BasicCar extends GameObject {
         wheelRBMesh.position.y = -0.05 + carBodyMesh.position.y;
         wheelRBMesh.position.z = 0.1 + carBodyMesh.position.z;
         this.meshes.push(wheelRBMesh);
+        this.wheelRBMesh = wheelRBMesh;
         const wheelRBShape = new CANNON.Sphere(0.04);
         const wheelRBBody = new CANNON.Body({
             mass: 1,
@@ -163,6 +168,40 @@ export class BasicCar extends GameObject {
         this.constraintLB.enableMotor();
         this.constraintRB.enableMotor();
     }
+
+    /**
+     * Returns the sensor rays on the car.
+     * 
+     * @returns {CANNON.Ray[]} The rays corresponding to the sensors on the car.
+     */
+    getRays() {
+        let forwardDir1 = this.wheelLFMesh.position.clone().sub(this.wheelLBMesh.position).normalize();
+        let forwardDir2 = this.wheelRFMesh.position.clone().sub(this.wheelRBMesh.position).normalize();
+        let forwardDir0 = forwardDir1.clone().add(forwardDir2).normalize();
+        let forwardDir = new CANNON.Vec3(forwardDir0.x, forwardDir0.y, forwardDir0.z);
+        let sideDir1 = this.wheelLBMesh.position.clone().sub(this.wheelRBMesh.position).normalize();
+        let sideDir2 = this.wheelLFMesh.position.clone().sub(this.wheelRFMesh.position).normalize();
+        let sideDir0 = sideDir1.clone().add(sideDir2).normalize();
+        let sideDir = new CANNON.Vec3(sideDir0.x, sideDir0.y, sideDir0.z);
+        let upDir = forwardDir.cross(sideDir);
+
+        let middlePos = new CANNON.Vec3(...this.carBodyMesh.position.toArray()).vadd(forwardDir.scale(0.1));
+
+        let angles = [0, -15, 15, -30, 30, -45, 45, -60, 60, -75, 75, -90, 90].map(angle => angle * Math.PI / 180);
+        let rays = angles.map(angle => {
+            let dir = forwardDir.clone().scale(Math.cos(angle)).vadd(sideDir.clone().scale(Math.sin(angle)));
+            let to = middlePos.clone().vadd(dir);
+            let from = middlePos.clone().vadd(sideDir.clone().scale(0.05 * Math.sin(angle)));
+            let ray = new CANNON.Ray(from, to);
+            ray.collisionFilterGroup = CAR_COLLISION_FILTER_GROUP;
+            ray.collisionFilterMask = ~CAR_COLLISION_FILTER_GROUP;
+            ray.skipBackfaces = true;
+
+            return ray;
+        });
+        return rays;
+    }
+
 
     /**
      * Applies the given inputs to the car body.
