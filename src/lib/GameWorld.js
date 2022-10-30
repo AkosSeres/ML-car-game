@@ -104,7 +104,7 @@ export class GameWorld {
             70,
             window.innerWidth / window.innerHeight,
             0.01,
-            10
+            100
         );
         this.camera.position.z = 0.5;
         this.camera.position.y = 0.5;

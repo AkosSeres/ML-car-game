@@ -190,13 +190,12 @@ export class BasicCar extends GameObject {
         let angles = [0, -15, 15, -30, 30, -45, 45, -60, 60, -75, 75, -90, 90].map(angle => angle * Math.PI / 180);
         let rays = angles.map(angle => {
             let dir = forwardDir.clone().scale(Math.cos(angle)).vadd(sideDir.clone().scale(Math.sin(angle)));
-            let to = middlePos.clone().vadd(dir);
             let from = middlePos.clone().vadd(sideDir.clone().scale(0.05 * Math.sin(angle)));
+            let to = from.clone().vadd(dir);
             let ray = new CANNON.Ray(from, to);
             ray.collisionFilterGroup = CAR_COLLISION_FILTER_GROUP;
             ray.collisionFilterMask = ~CAR_COLLISION_FILTER_GROUP;
             ray.skipBackfaces = true;
-
             return ray;
         });
         return rays;
