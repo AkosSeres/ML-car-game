@@ -123,6 +123,7 @@ export class DrawMode implements Mode {
         } else {
             this.ring.visible = false;
         }
+        this.ring.scale.set(this.brushSize, this.brushSize, this.brushSize);
 
         if (this.mouseDown) this.addDrawing();
     }

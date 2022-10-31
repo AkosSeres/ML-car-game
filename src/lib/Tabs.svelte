@@ -54,4 +54,6 @@
     {/each}
 </div>
 
-<svelte:component this={panels[activeTab]} />
+<div class="p-4">
+    <svelte:component this={panels[activeTab]} mode={modes[activeTab]} />
+</div>
