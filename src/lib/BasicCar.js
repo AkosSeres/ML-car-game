@@ -29,7 +29,7 @@ export class BasicCar extends GameObject {
         this.bodies.push(carBody);
 
         //front left wheel
-        const wheelLFGeometry = new THREE.CylinderGeometry(0.033, 0.033, 0.02);
+        const wheelLFGeometry = new THREE.CylinderGeometry(0.033, 0.033, 0.02, 16);
         wheelLFGeometry.rotateZ(Math.PI / 2);
         const wheelLFMesh = new THREE.Mesh(wheelLFGeometry, wheelMaterial);
         wheelLFMesh.castShadow = true;
@@ -40,6 +40,8 @@ export class BasicCar extends GameObject {
         this.meshes.push(wheelLFMesh);
         this.wheelLFMesh = wheelLFMesh;
         const wheelLFShape = new CANNON.Sphere(0.033);
+        // const wheelLFShape = new CANNON.Cylinder(0.033, 0.033, 0.02, 16);
+        // wheelLFShape.transformAllPoints(new CANNON.Vec3(), new CANNON.Quaternion().setFromAxisAngle(new CANNON.Vec3(0, 0, 1), Math.PI / 2));
         const wheelLFBody = new CANNON.Body({
             mass: mass / 8,
             material: wheelPhyMaterial,
@@ -53,7 +55,7 @@ export class BasicCar extends GameObject {
         this.bodies.push(wheelLFBody);
 
         //front right wheel
-        const wheelRFGeometry = new THREE.CylinderGeometry(0.033, 0.033, 0.02);
+        const wheelRFGeometry = new THREE.CylinderGeometry(0.033, 0.033, 0.02, 16);
         wheelRFGeometry.rotateZ(Math.PI / 2);
         const wheelRFMesh = new THREE.Mesh(wheelRFGeometry, wheelMaterial);
         wheelRFMesh.castShadow = true;
@@ -193,9 +195,11 @@ export class BasicCar extends GameObject {
             let from = middlePos.clone().vadd(sideDir.clone().scale(0.05 * Math.sin(angle)));
             let to = from.clone().vadd(dir);
             let ray = new CANNON.Ray(from, to);
-            ray.collisionFilterGroup = CAR_COLLISION_FILTER_GROUP;
             ray.collisionFilterMask = ~CAR_COLLISION_FILTER_GROUP;
             ray.skipBackfaces = true;
+            ray.checkCollisionResponse = false;
+            ray.mode = CANNON.Ray.CLOSEST;
+            ray.precision = 0.0001;
             return ray;
         });
         return rays;
