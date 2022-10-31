@@ -81,6 +81,22 @@
                 case " ":
                     SPACE = true;
                     break;
+                case "r":
+                    gameWorld.controls.maxPolarAngle = 0;
+                    gameWorld.controls.minAzimuthAngle = 0;
+                    gameWorld.controls.maxAzimuthAngle = 0;
+                    gameWorld.controls.minDistance = 10;
+                    gameWorld.controls.maxDistance = 10;
+                    gameWorld.controls.target = new THREE.Vector3(0, 0, 0);
+                    break;
+                case "c":
+                    gameWorld.controls.maxPolarAngle = Math.PI;
+                    gameWorld.controls.minAzimuthAngle = Infinity;
+                    gameWorld.controls.maxAzimuthAngle = Infinity;
+                    gameWorld.controls.minDistance = 0;
+                    gameWorld.controls.maxDistance = 50;
+                    gameWorld.controls.reset();
+                    break;
             }
         });
         document.addEventListener("keyup", (e) => {
