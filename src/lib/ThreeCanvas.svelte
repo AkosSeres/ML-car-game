@@ -7,6 +7,7 @@
     import { BasicCar, CAR_COLLISION_FILTER_GROUP } from "./BasicCar";
 
     const BARRIER_RAYCAST_LAYER = 8;
+    const BARRIER_COLLISION_FILTER_GROUP = 16;
 
     let canvas;
     /** @type {GameWorld} */
@@ -29,28 +30,13 @@
         );
         gameWorld.addGameObject(box);
 
-        const sphere = new SphereObject(0.3, 0.3, 0.3, 0.1, phongMaterial, 0.2);
-        gameWorld.addGameObject(sphere);
-
         const carBodyMaterial = new THREE.MeshNormalMaterial();
         const carWheelMaterial = new THREE.MeshPhongMaterial({
             color: 0x222222,
         });
 
-        const car2 = new BasicCar(
-            0.5,
-            0.4,
-            -0.5,
-            carBodyMaterial,
-            carWheelMaterial,
-            1,
-            0.25,
-            0.1
-        );
-        gameWorld.addGameObject(car2);
-
         const car = new BasicCar(
-            -0.5,
+            -0.7,
             0.4,
             -0.5,
             carBodyMaterial,
@@ -118,11 +104,12 @@
 
         // Define the curve
         let roadSpline = new THREE.CatmullRomCurve3([
-            new THREE.Vector3(-3.0, 0.0, 1.0),
-            new THREE.Vector3(-3.0, 0.0, 4.0),
-            new THREE.Vector3(-3.0, 0.0, 3.0),
-            new THREE.Vector3(3.0, 0.0, -2.0),
-            new THREE.Vector3(1.0, 0.0, -3.0),
+            new THREE.Vector3(4.0, 0.0, 4.0),
+            new THREE.Vector3(-4.0, 0.0, 4.0),
+            new THREE.Vector3(-4.0, 0.0, 0.0),
+            new THREE.Vector3(4.0, 0.0, 0.0),
+            new THREE.Vector3(4.0, 0.0, -4.0),
+            new THREE.Vector3(-4.0, 0.0, -4.0),
         ]);
         roadSpline.type = "catmullrom";
         roadSpline.closed = false;
@@ -147,7 +134,7 @@
 
         // Set up settings for later extrusion
         let extrudeSettings = {
-            steps: Math.floor(roadSpline.getLength() / 0.1),
+            steps: Math.floor(roadSpline.getLength() / 0.15),
             bevelEnabled: false,
             extrudePath: roadSpline,
         };
@@ -203,6 +190,10 @@
                 barrier.rotateY(Math.atan2(-t.z, t.x));
                 barrier.meshes[0].layers.enable(BARRIER_RAYCAST_LAYER);
                 barrier.meshes[0].receiveShadow = false;
+                barrier.bodies[0].collisionFilterGroup =
+                    BARRIER_COLLISION_FILTER_GROUP;
+                barrier.bodies[0].collisionFilterMask =
+                    ~BARRIER_COLLISION_FILTER_GROUP;
                 gameWorld.addGameObject(barrier);
             }
 
@@ -240,6 +231,10 @@
                 barrier.rotateY(Math.atan2(-t.z, t.x));
                 barrier.meshes[0].layers.enable(BARRIER_RAYCAST_LAYER);
                 barrier.meshes[0].receiveShadow = false;
+                barrier.bodies[0].collisionFilterGroup =
+                    BARRIER_COLLISION_FILTER_GROUP;
+                barrier.bodies[0].collisionFilterMask =
+                    ~BARRIER_COLLISION_FILTER_GROUP;
                 gameWorld.addGameObject(barrier);
             }
         }
