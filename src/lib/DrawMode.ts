@@ -9,6 +9,10 @@ export class DrawMode implements Mode {
         this.gameWorld = gameWorld;
     }
 
+    update(delta: number) {
+        // TODO
+    }
+
     activate() {
         this.gameWorld.controls.maxPolarAngle = 0;
         this.gameWorld.controls.minAzimuthAngle = 0;

@@ -17,6 +17,7 @@ export class GameWorld {
     cameraPosition: THREE.Vector3;
     cameraQuaternion: THREE.Quaternion;
     resizeFunction: EventListenerOrEventListenerObject | undefined;
+    callback: (delta: number) => void;
 
     /**
      * Creates the game world by initializing the three.js scene and camera.
@@ -33,6 +34,7 @@ export class GameWorld {
         this.enableAutoResizer();
         this.setupControls();
         this.createPhyiscsWorld();
+        this.callback = () => { };
 
         let clock = new THREE.Clock();
 
@@ -60,7 +62,17 @@ export class GameWorld {
         const camera = this.camera.clone();
         camera.position.copy(this.cameraPosition);
         camera.quaternion.copy(this.cameraQuaternion);
+        this.callback(delta);
         this.renderer.render(this.scene, camera);
+    }
+
+    /**
+     * Calls the given function before each render, but after the physics update.
+     * 
+     * @param callback The function to call.
+     */
+    requestCallbackBeforeRender(callback: (delta: number) => void) {
+        this.callback = callback;
     }
 
     /**

@@ -31,6 +31,9 @@
         if (activeTab !== -1) modes[activeTab].deactivate();
         activeTab = num;
         modes[activeTab].activate();
+        gameWorld.requestCallbackBeforeRender(
+            modes[activeTab].update.bind(modes[activeTab])
+        );
     }
 </script>
 

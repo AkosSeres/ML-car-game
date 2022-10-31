@@ -8,6 +8,10 @@ export class TrainMode implements Mode {
         this.gameWorld = gameWorld;
     }
 
+    update(delta: number) {
+        // TODO
+    }
+
     activate() {
         // TODO
     }
