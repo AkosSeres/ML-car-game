@@ -147,7 +147,7 @@
 
         // Set up settings for later extrusion
         let extrudeSettings = {
-            steps: Math.floor(roadSpline.getLength() / 0.05),
+            steps: Math.floor(roadSpline.getLength() / 0.1),
             bevelEnabled: false,
             extrudePath: roadSpline,
         };
@@ -164,12 +164,12 @@
         });
 
         {
-            let barrierSize = 0.45;
             let barrierMaterial = new THREE.MeshLambertMaterial({
-                color: 0xbb0000,
+                color: 0xffea00,
                 wireframe: false,
             });
 
+            /** @type {THREE.Vector3[]} */
             const leftPoints = [];
             for (
                 let i = 6;
@@ -184,30 +184,29 @@
                     )
                 );
             }
-            let leftKerbSpline = new THREE.CatmullRomCurve3(leftPoints);
-            leftKerbSpline.type = "catmullrom";
-            leftKerbSpline.closed = false;
-            let leftKerbLength = leftKerbSpline.getLength();
-            let leftBarrierNum = Math.floor(leftKerbLength / barrierSize);
-            for (let i = 0; i < leftBarrierNum; i++) {
-                let u = i / leftBarrierNum;
-                let t = leftKerbSpline.getTangentAt(u);
-                let p = leftKerbSpline.getPointAt(u);
+            for (let i = 1; i < leftPoints.length; i++) {
+                let t = leftPoints[i].clone().sub(leftPoints[i - 1]);
+                let p = leftPoints[i]
+                    .clone()
+                    .add(leftPoints[i - 1])
+                    .divideScalar(2);
                 let barrier = new BoxObject(
                     p.x,
-                    p.y + 0.1,
+                    p.y + 0.09,
                     p.z,
-                    barrierSize + 0.2,
-                    0.5,
-                    0.1,
+                    t.length(),
+                    0.2,
+                    0.01,
                     barrierMaterial,
                     0
                 );
                 barrier.rotateY(Math.atan2(-t.z, t.x));
                 barrier.meshes[0].layers.enable(BARRIER_RAYCAST_LAYER);
+                barrier.meshes[0].receiveShadow = false;
                 gameWorld.addGameObject(barrier);
             }
 
+            /** @type {THREE.Vector3[]} */
             const rightPoints = [];
             for (
                 let i = 3;
@@ -222,9 +221,27 @@
                     )
                 );
             }
-            let rightKerbSpline = new THREE.CatmullRomCurve3(rightPoints);
-            rightKerbSpline.type = "centripetal";
-            rightKerbSpline.closed = false;
+            for (let i = 1; i < rightPoints.length; i++) {
+                let t = rightPoints[i].clone().sub(rightPoints[i - 1]);
+                let p = rightPoints[i]
+                    .clone()
+                    .add(rightPoints[i - 1])
+                    .divideScalar(2);
+                let barrier = new BoxObject(
+                    p.x,
+                    p.y + 0.09,
+                    p.z,
+                    t.length(),
+                    0.2,
+                    0.01,
+                    barrierMaterial,
+                    0
+                );
+                barrier.rotateY(Math.atan2(-t.z, t.x));
+                barrier.meshes[0].layers.enable(BARRIER_RAYCAST_LAYER);
+                barrier.meshes[0].receiveShadow = false;
+                gameWorld.addGameObject(barrier);
+            }
         }
 
         // Create mesh with the resulting geometry
