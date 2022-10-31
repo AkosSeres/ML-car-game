@@ -174,32 +174,24 @@ export class BasicCar extends GameObject {
     /**
      * Returns the sensor rays on the car.
      * 
-     * @returns {CANNON.Ray[]} The rays corresponding to the sensors on the car.
+     * @returns {THREE.Raycaster[]} The rays corresponding to the sensors on the car.
      */
     getRays() {
         let forwardDir1 = this.wheelLFMesh.position.clone().sub(this.wheelLBMesh.position).normalize();
         let forwardDir2 = this.wheelRFMesh.position.clone().sub(this.wheelRBMesh.position).normalize();
-        let forwardDir0 = forwardDir1.clone().add(forwardDir2).normalize();
-        let forwardDir = new CANNON.Vec3(forwardDir0.x, forwardDir0.y, forwardDir0.z);
+        let forwardDir = forwardDir1.clone().add(forwardDir2).divideScalar(2);
         let sideDir1 = this.wheelLBMesh.position.clone().sub(this.wheelRBMesh.position).normalize();
         let sideDir2 = this.wheelLFMesh.position.clone().sub(this.wheelRFMesh.position).normalize();
-        let sideDir0 = sideDir1.clone().add(sideDir2).normalize();
-        let sideDir = new CANNON.Vec3(sideDir0.x, sideDir0.y, sideDir0.z);
-        let upDir = forwardDir.cross(sideDir);
+        let sideDir = sideDir1.clone().add(sideDir2).normalize();
+        let upDir = forwardDir.clone().cross(sideDir);
 
-        let middlePos = new CANNON.Vec3(...this.carBodyMesh.position.toArray()).vadd(forwardDir.scale(0.1));
+        let middlePos = this.carBodyMesh.position.clone().add(forwardDir.clone().multiplyScalar(0.1));
 
         let angles = [0, -15, 15, -30, 30, -45, 45, -60, 60, -75, 75, -90, 90].map(angle => angle * Math.PI / 180);
         let rays = angles.map(angle => {
-            let dir = forwardDir.clone().scale(Math.cos(angle)).vadd(sideDir.clone().scale(Math.sin(angle)));
-            let from = middlePos.clone().vadd(sideDir.clone().scale(0.05 * Math.sin(angle)));
-            let to = from.clone().vadd(dir);
-            let ray = new CANNON.Ray(from, to);
-            ray.collisionFilterMask = ~CAR_COLLISION_FILTER_GROUP;
-            ray.skipBackfaces = true;
-            ray.checkCollisionResponse = false;
-            ray.mode = CANNON.Ray.CLOSEST;
-            ray.precision = 0.0001;
+            let dir = forwardDir.clone().multiplyScalar(Math.cos(angle)).add(sideDir.clone().multiplyScalar(Math.sin(angle)));
+            let from = middlePos.clone().add(sideDir.clone().multiplyScalar(0.05 * Math.sin(angle)));
+            let ray = new THREE.Raycaster(from, dir, 0.01, 1.0);
             return ray;
         });
         return rays;

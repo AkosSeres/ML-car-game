@@ -6,6 +6,8 @@
     import { GameWorld } from "./GameWorld";
     import { BasicCar, CAR_COLLISION_FILTER_GROUP } from "./BasicCar";
 
+    const BARRIER_RAYCAST_LAYER = 8;
+
     let canvas;
     /** @type {GameWorld} */
     let gameWorld;
@@ -60,10 +62,10 @@
         gameWorld.addGameObject(car);
 
         const arrowHelpers = car.getRays().map((ray) => {
-            const dir = ray.direction;
+            const dir = ray.ray.direction;
             dir.normalize();
-            const origin = ray.from;
-            const length = ray.to.vsub(ray.from).length();
+            const origin = ray.ray.origin;
+            const length = dir.length();
             const hex = 0xffff00;
             const arrowHelper = new THREE.ArrowHelper(dir, origin, length, hex);
             gameWorld.scene.add(arrowHelper);
@@ -202,6 +204,7 @@
                     0
                 );
                 barrier.rotateY(Math.atan2(-t.z, t.x));
+                barrier.meshes[0].layers.enable(BARRIER_RAYCAST_LAYER);
                 gameWorld.addGameObject(barrier);
             }
 
@@ -233,20 +236,20 @@
             car.applyInput(W, A, S, D, SPACE);
 
             car.getRays().forEach((ray, idx) => {
-                ray.intersectWorld(gameWorld.world, {
-                    checkCollisionResponse: false,
-                    skipBackfaces: true,
-                    collisionFilterMask: ~CAR_COLLISION_FILTER_GROUP,
-                    mode: CANNON.Ray.CLOSEST,
+                ray.layers.set(BARRIER_RAYCAST_LAYER);
+                const intersects = ray.intersectObjects(
+                    gameWorld.scene.children
+                );
+                let distance = 1.0;
+                intersects.forEach((sect) => {
+                    if (sect.distance < distance) distance = sect.distance;
                 });
-                const result = ray.result;
                 const arrowHelper = arrowHelpers[idx];
-                arrowHelper.setDirection(ray.direction);
-                if (result.distance === -1) arrowHelper.setLength(1);
-                else arrowHelper.setLength(result.distance);
-                arrowHelper.position.x = ray.from.x;
-                arrowHelper.position.y = ray.from.y;
-                arrowHelper.position.z = ray.from.z;
+                arrowHelper.setLength(distance, 0.05, 0.03);
+                arrowHelper.setDirection(ray.ray.direction);
+                arrowHelper.position.x = ray.ray.origin.x;
+                arrowHelper.position.y = ray.ray.origin.y;
+                arrowHelper.position.z = ray.ray.origin.z;
             });
 
             window.requestAnimationFrame(applyInput);
