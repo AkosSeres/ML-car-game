@@ -61,6 +61,16 @@ export class BoxObject extends GameObject {
         mesh.translateZ(z);
         this.meshes.push(mesh);
     }
+
+    /**
+     * Rotates the object around the y axis by the given angle.
+     * 
+     * @param {number} angle Angle to rotate by in radians.
+     */
+    rotateY(angle) {
+        this.bodies[0].quaternion.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), angle);
+        this.meshes[0].rotateY(angle);
+    }
 }
 
 /**
