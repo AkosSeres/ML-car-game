@@ -6,7 +6,7 @@ export const BARRIER_RAYCAST_LAYER = 4;
 export const BARRIER_COLLISION_FILTER_GROUP = 16;
 
 const roadLineLen = 0.19;
-const lineGeomerty = new THREE.BoxGeometry(0.04, 0.1, roadLineLen);
+const lineGeomerty = new THREE.BoxGeometry(0.04, 0.04, roadLineLen);
 const lineMaterial = new THREE.MeshPhongMaterial({ color: 0xffffff });
 const roadMaterial = new THREE.MeshLambertMaterial({
     color: 0x515151,
@@ -38,8 +38,10 @@ export class RaceTrack extends GameObject {
             let p = this.roadSpline.getPointAt(u);
             let t = this.roadSpline.getTangentAt(u);
             let lineMesh = new THREE.Mesh(lineGeomerty, lineMaterial);
+            lineMesh.receiveShadow = true;
+            lineMesh.castShadow = false;
             lineMesh.position.x = p.x;
-            lineMesh.position.y = p.y + 0.065;
+            lineMesh.position.y = p.y;
             lineMesh.position.z = p.z;
             lineMesh.rotateY(Math.atan2(t.x, t.z));
             this.meshes.push(lineMesh);
@@ -55,7 +57,7 @@ export class RaceTrack extends GameObject {
         let shape = new THREE.Shape(pts);
         let geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
         let roadMesh = new THREE.Mesh(geometry, roadMaterial);
-        roadMesh.translateY(0.11);
+        roadMesh.translateY(0.01);
         this.meshes.push(roadMesh);
 
         {
@@ -75,7 +77,7 @@ export class RaceTrack extends GameObject {
                 leftPoints.push(
                     new THREE.Vector3(
                         geometry.attributes.position.array[i],
-                        geometry.attributes.position.array[i + 1] + 0.12,
+                        geometry.attributes.position.array[i + 1],
                         geometry.attributes.position.array[i + 2]
                     )
                 );
@@ -88,7 +90,7 @@ export class RaceTrack extends GameObject {
                     .divideScalar(2);
                 let barrier = new BoxObject(
                     p.x,
-                    p.y + 0.09,
+                    p.y + 0.1,
                     p.z,
                     t.length(),
                     0.2,
@@ -113,7 +115,7 @@ export class RaceTrack extends GameObject {
                 rightPoints.push(
                     new THREE.Vector3(
                         geometry.attributes.position.array[i],
-                        geometry.attributes.position.array[i + 1] + 0.12,
+                        geometry.attributes.position.array[i + 1],
                         geometry.attributes.position.array[i + 2]
                     )
                 );
@@ -126,7 +128,7 @@ export class RaceTrack extends GameObject {
                     .divideScalar(2);
                 let barrier = new BoxObject(
                     p.x,
-                    p.y + 0.09,
+                    p.y + 0.1,
                     p.z,
                     t.length(),
                     0.2,
