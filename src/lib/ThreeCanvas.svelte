@@ -5,7 +5,6 @@
     import { BoxObject, SphereObject } from "./GameObject";
     import { GameWorld } from "./GameWorld";
     import { BasicCar, CAR_COLLISION_FILTER_GROUP } from "./BasicCar";
-    import { RaceTrack } from "./RaceTrack";
     import { gameWorldStore } from "./stores";
 
     let canvas;
@@ -15,18 +14,6 @@
     onMount(() => {
         gameWorld = new GameWorld(canvas);
         gameWorldStore.set(gameWorld);
-
-        // Define the curve
-        let roadPoints = [
-            new THREE.Vector3(4.0, 0.0, 4.0),
-            new THREE.Vector3(-4.0, 0.0, 4.0),
-            new THREE.Vector3(-4.0, 0.0, 0.0),
-            new THREE.Vector3(4.0, 0.0, 0.0),
-            new THREE.Vector3(4.0, 0.0, -4.0),
-            new THREE.Vector3(-4.0, 0.0, -4.0),
-        ];
-        let road = new RaceTrack(roadPoints, 1.0);
-        gameWorld.addGameObject(road);
     });
 </script>
 
