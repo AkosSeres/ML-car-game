@@ -33,5 +33,5 @@
     "src/**/*.d.ts",
     "src/**/*.js",
     "src/**/*.svelte"
-, "src/lib/GameObject.js"  ]
+, "src/lib/GameObject.js", "src/lib/GameWorld.ts"  ]
 }

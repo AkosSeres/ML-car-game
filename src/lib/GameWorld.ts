@@ -1,12 +1,23 @@
 import * as THREE from "three";
 import * as CANNON from "cannon-es";
-import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { OrbitControls } from "three/addons/controls/OrbitControls";
 import { GameObject } from "./GameObject";
 
 /**
  * Class representing a game world. It contains and manages the renderer and the physics engine.
  */
 export class GameWorld {
+    canvas: HTMLCanvasElement;
+    scene: THREE.Scene;
+    renderer: THREE.WebGLRenderer;
+    gameObjects: GameObject[];
+    world: CANNON.World;
+    controls: OrbitControls;
+    camera: THREE.PerspectiveCamera;
+    cameraPosition: THREE.Vector3;
+    cameraQuaternion: THREE.Quaternion;
+    resizeFunction: EventListenerOrEventListenerObject | undefined;
+
     /**
      * Creates the game world by initializing the three.js scene and camera.
      * It also sets up the physics world.
@@ -23,10 +34,10 @@ export class GameWorld {
         this.setupControls();
         this.createPhyiscsWorld();
 
-        this.clock = new THREE.Clock();
+        let clock = new THREE.Clock();
 
         const animation = () => {
-            const delta = Math.min(this.clock.getDelta(), 0.1);
+            const delta = Math.min(clock.getDelta(), 0.1);
             if (delta > 0) {
                 this.update(delta);
             }
@@ -44,7 +55,12 @@ export class GameWorld {
         this.world.step(delta);
         this.gameObjects.forEach(obj => obj.syncMeshesToBodies());
         this.controls.update();
-        this.renderer.render(this.scene, this.camera);
+        this.cameraPosition.lerp(this.camera.position, 0.1);
+        this.cameraQuaternion.slerp(this.camera.quaternion, 0.1);
+        const camera = this.camera.clone();
+        camera.position.copy(this.cameraPosition);
+        camera.quaternion.copy(this.cameraQuaternion);
+        this.renderer.render(this.scene, camera);
     }
 
     /**
@@ -106,9 +122,11 @@ export class GameWorld {
             0.01,
             100
         );
-        this.camera.position.z = 0.5;
-        this.camera.position.y = 0.5;
-        this.camera.position.x = 0.5;
+        this.camera.position.z = 4;
+        this.camera.position.y = 4;
+        this.camera.position.x = 4;
+        this.cameraPosition = this.camera.position.clone();
+        this.cameraQuaternion = this.camera.quaternion.clone();
     }
 
     /**
@@ -162,5 +180,6 @@ export class GameWorld {
      */
     setupControls() {
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+        this.controls.enableDamping = false;
     }
 }
