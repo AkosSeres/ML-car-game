@@ -5,8 +5,9 @@
     import { BoxObject, SphereObject } from "./GameObject";
     import { GameWorld } from "./GameWorld";
     import { BasicCar, CAR_COLLISION_FILTER_GROUP } from "./BasicCar";
+    import { RaceTrack } from "./RaceTrack";
 
-    const BARRIER_RAYCAST_LAYER = 8;
+    const BARRIER_RAYCAST_LAYER = 4;
     const BARRIER_COLLISION_FILTER_GROUP = 16;
 
     let canvas;
@@ -36,9 +37,9 @@
         });
 
         const car = new BasicCar(
-            -0.7,
+            -0.2,
             0.4,
-            -0.5,
+            -0.2,
             carBodyMaterial,
             carWheelMaterial,
             5,
@@ -103,146 +104,16 @@
         });
 
         // Define the curve
-        let roadSpline = new THREE.CatmullRomCurve3([
+        let roadPoints = [
             new THREE.Vector3(4.0, 0.0, 4.0),
             new THREE.Vector3(-4.0, 0.0, 4.0),
             new THREE.Vector3(-4.0, 0.0, 0.0),
             new THREE.Vector3(4.0, 0.0, 0.0),
             new THREE.Vector3(4.0, 0.0, -4.0),
             new THREE.Vector3(-4.0, 0.0, -4.0),
-        ]);
-        roadSpline.type = "catmullrom";
-        roadSpline.closed = false;
-
-        // Add road lines
-        let roadLineLen = 0.19;
-        let arcLen = roadSpline.getLength();
-        let roadLineNum = Math.floor(arcLen / roadLineLen / 2);
-        let lineGeomerty = new THREE.BoxGeometry(0.04, 0.1, roadLineLen);
-        let lineMaterial = new THREE.MeshPhongMaterial({ color: 0xffffff });
-        for (let i = 1; i < roadLineNum; i += 2) {
-            let u = i / roadLineNum;
-            let p = roadSpline.getPointAt(u);
-            let t = roadSpline.getTangentAt(u);
-            let lineMesh = new THREE.Mesh(lineGeomerty, lineMaterial);
-            lineMesh.position.x = p.x;
-            lineMesh.position.y = p.y + 0.065;
-            lineMesh.position.z = p.z;
-            lineMesh.rotateY(Math.atan2(t.x, t.z));
-            gameWorld.scene.add(lineMesh);
-        }
-
-        // Set up settings for later extrusion
-        let extrudeSettings = {
-            steps: Math.floor(roadSpline.getLength() / 0.15),
-            bevelEnabled: false,
-            extrudePath: roadSpline,
-        };
-
-        // Define a triangle
-        let pts = [new THREE.Vector2(0, -0.5), new THREE.Vector2(0, 0.5)];
-        let shape = new THREE.Shape(pts);
-
-        // Extrude the triangle along the CatmullRom curve
-        let geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-        let material = new THREE.MeshLambertMaterial({
-            color: 0x515151,
-            wireframe: false,
-        });
-
-        {
-            let barrierMaterial = new THREE.MeshLambertMaterial({
-                color: 0xffea00,
-                wireframe: false,
-            });
-
-            /** @type {THREE.Vector3[]} */
-            const leftPoints = [];
-            for (
-                let i = 6;
-                i < geometry.attributes.position.array.length / 2;
-                i += 9
-            ) {
-                leftPoints.push(
-                    new THREE.Vector3(
-                        geometry.attributes.position.array[i],
-                        geometry.attributes.position.array[i + 1] + 0.12,
-                        geometry.attributes.position.array[i + 2]
-                    )
-                );
-            }
-            for (let i = 1; i < leftPoints.length; i++) {
-                let t = leftPoints[i].clone().sub(leftPoints[i - 1]);
-                let p = leftPoints[i]
-                    .clone()
-                    .add(leftPoints[i - 1])
-                    .divideScalar(2);
-                let barrier = new BoxObject(
-                    p.x,
-                    p.y + 0.09,
-                    p.z,
-                    t.length(),
-                    0.2,
-                    0.01,
-                    barrierMaterial,
-                    0
-                );
-                barrier.rotateY(Math.atan2(-t.z, t.x));
-                barrier.meshes[0].layers.enable(BARRIER_RAYCAST_LAYER);
-                barrier.meshes[0].receiveShadow = false;
-                barrier.bodies[0].collisionFilterGroup =
-                    BARRIER_COLLISION_FILTER_GROUP;
-                barrier.bodies[0].collisionFilterMask =
-                    ~BARRIER_COLLISION_FILTER_GROUP;
-                gameWorld.addGameObject(barrier);
-            }
-
-            /** @type {THREE.Vector3[]} */
-            const rightPoints = [];
-            for (
-                let i = 3;
-                i < geometry.attributes.position.array.length / 2;
-                i += 9
-            ) {
-                rightPoints.push(
-                    new THREE.Vector3(
-                        geometry.attributes.position.array[i],
-                        geometry.attributes.position.array[i + 1] + 0.12,
-                        geometry.attributes.position.array[i + 2]
-                    )
-                );
-            }
-            for (let i = 1; i < rightPoints.length; i++) {
-                let t = rightPoints[i].clone().sub(rightPoints[i - 1]);
-                let p = rightPoints[i]
-                    .clone()
-                    .add(rightPoints[i - 1])
-                    .divideScalar(2);
-                let barrier = new BoxObject(
-                    p.x,
-                    p.y + 0.09,
-                    p.z,
-                    t.length(),
-                    0.2,
-                    0.01,
-                    barrierMaterial,
-                    0
-                );
-                barrier.rotateY(Math.atan2(-t.z, t.x));
-                barrier.meshes[0].layers.enable(BARRIER_RAYCAST_LAYER);
-                barrier.meshes[0].receiveShadow = false;
-                barrier.bodies[0].collisionFilterGroup =
-                    BARRIER_COLLISION_FILTER_GROUP;
-                barrier.bodies[0].collisionFilterMask =
-                    ~BARRIER_COLLISION_FILTER_GROUP;
-                gameWorld.addGameObject(barrier);
-            }
-        }
-
-        // Create mesh with the resulting geometry
-        let mesh = new THREE.Mesh(geometry, material);
-        mesh.translateY(0.11);
-        gameWorld.scene.add(mesh);
+        ];
+        let road = new RaceTrack(roadPoints, 1.0);
+        gameWorld.addGameObject(road);
 
         const applyInput = () => {
             car.applyInput(W, A, S, D, SPACE);
