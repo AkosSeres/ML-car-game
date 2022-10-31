@@ -6,6 +6,7 @@
     import { GameWorld } from "./GameWorld";
     import { BasicCar, CAR_COLLISION_FILTER_GROUP } from "./BasicCar";
     import { RaceTrack } from "./RaceTrack";
+    import { gameWorldStore } from "./stores";
 
     const BARRIER_RAYCAST_LAYER = 4;
     const BARRIER_COLLISION_FILTER_GROUP = 16;
@@ -16,6 +17,7 @@
 
     onMount(() => {
         gameWorld = new GameWorld(canvas);
+        gameWorldStore.set(gameWorld);
         const phongMaterial = new THREE.MeshPhongMaterial({ color: 0xffffff });
         const box = new BoxObject(
             0,

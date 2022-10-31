@@ -235,6 +235,8 @@ export class BasicCar extends GameObject {
             this.constraintRB.setMotorSpeed(0);
             this.constraintLF.enableMotor();
             this.constraintRF.enableMotor();
+            this.constraintLF.setMotorMaxForce(this.brakeMotorForce);
+            this.constraintRF.setMotorMaxForce(this.brakeMotorForce);
             this.constraintLF.setMotorSpeed(0);
             this.constraintRF.setMotorSpeed(0);
         } else {
