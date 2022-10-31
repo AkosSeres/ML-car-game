@@ -15,20 +15,6 @@
     onMount(() => {
         gameWorld = new GameWorld(canvas);
         gameWorldStore.set(gameWorld);
-        const phongMaterial = new THREE.MeshPhongMaterial({ color: 0xffffff });
-        const box = new BoxObject(
-            0,
-            0,
-            0,
-            10,
-            0.2,
-            10,
-            phongMaterial,
-            0,
-            0.05,
-            0.05
-        );
-        gameWorld.addGameObject(box);
 
         // Define the curve
         let roadPoints = [

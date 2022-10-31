@@ -2,6 +2,7 @@ import * as THREE from "three";
 import * as CANNON from "cannon-es";
 import { OrbitControls } from "three/addons/controls/OrbitControls";
 import { GameObject } from "./GameObject";
+import { Ground } from "./Ground";
 
 /**
  * Class representing a game world. It contains and manages the renderer and the physics engine.
@@ -18,6 +19,7 @@ export class GameWorld {
     cameraQuaternion: THREE.Quaternion;
     resizeFunction: EventListenerOrEventListenerObject | undefined;
     callback: (delta: number) => void;
+    ground: Ground;
 
     /**
      * Creates the game world by initializing the three.js scene and camera.
@@ -48,6 +50,8 @@ export class GameWorld {
 
         /** @type {GameObject[]} */
         this.gameObjects = [];
+        this.ground = new Ground();
+        this.addGameObject(this.ground);
     }
 
     /**
