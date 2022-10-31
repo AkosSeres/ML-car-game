@@ -33,78 +33,6 @@
         );
         gameWorld.addGameObject(box);
 
-        const carBodyMaterial = new THREE.MeshNormalMaterial();
-        const carWheelMaterial = new THREE.MeshPhongMaterial({
-            color: 0x222222,
-        });
-
-        const car = new BasicCar(
-            -0.2,
-            0.4,
-            -0.2,
-            carBodyMaterial,
-            carWheelMaterial,
-            5,
-            0.25,
-            0.1
-        );
-        gameWorld.addGameObject(car);
-
-        const arrowHelpers = car.getRays().map((ray) => {
-            const dir = ray.ray.direction;
-            dir.normalize();
-            const origin = ray.ray.origin;
-            const length = dir.length();
-            const hex = 0xffff00;
-            const arrowHelper = new THREE.ArrowHelper(dir, origin, length, hex);
-            gameWorld.scene.add(arrowHelper);
-            return arrowHelper;
-        });
-
-        let W = false,
-            A = false,
-            S = false,
-            D = false,
-            SPACE = false;
-        document.addEventListener("keydown", (e) => {
-            switch (e.key) {
-                case "w":
-                    W = true;
-                    break;
-                case "a":
-                    A = true;
-                    break;
-                case "s":
-                    S = true;
-                    break;
-                case "d":
-                    D = true;
-                    break;
-                case " ":
-                    SPACE = true;
-                    break;
-            }
-        });
-        document.addEventListener("keyup", (e) => {
-            switch (e.key) {
-                case "w":
-                    W = false;
-                    break;
-                case "a":
-                    A = false;
-                    break;
-                case "s":
-                    S = false;
-                    break;
-                case "d":
-                    D = false;
-                    break;
-                case " ":
-                    SPACE = false;
-                    break;
-            }
-        });
-
         // Define the curve
         let roadPoints = [
             new THREE.Vector3(4.0, 0.0, 4.0),
@@ -117,9 +45,18 @@
         let road = new RaceTrack(roadPoints, 1.0);
         gameWorld.addGameObject(road);
 
-        const applyInput = () => {
-            car.applyInput(W, A, S, D, SPACE);
+        const arrowHelpers = car.getRays().map((ray) => {
+            const dir = ray.ray.direction;
+            dir.normalize();
+            const origin = ray.ray.origin;
+            const length = dir.length();
+            const hex = 0xffff00;
+            const arrowHelper = new THREE.ArrowHelper(dir, origin, length, hex);
+            gameWorld.scene.add(arrowHelper);
+            return arrowHelper;
+        });
 
+        const applyInput = () => {
             car.getRays().forEach((ray, idx) => {
                 ray.layers.set(BARRIER_RAYCAST_LAYER);
                 const intersects = ray.intersectObjects(
