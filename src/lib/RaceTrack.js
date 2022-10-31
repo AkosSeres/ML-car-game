@@ -13,7 +13,17 @@ const roadMaterial = new THREE.MeshLambertMaterial({
     wireframe: false,
 });
 
+/**
+ * A GameObject that is a race track with road and barriers.
+ */
 export class RaceTrack extends GameObject {
+    /**
+     * Creates the road and the barriers as a GameObject.
+     * 
+     * @param {THREE.Vector3[]} roadPoints The points that describe the road's path.
+     * @param {number} roadWidth The width of the road.
+     * @param {number} resolution The size of the road's segments. The lower the value, the more detailed the road will be.
+     */
     constructor(roadPoints, roadWidth = 1.0, resolution = 0.15) {
         super();
         /** @type {THREE.CatmullRomCurve3} */
@@ -139,6 +149,9 @@ export class RaceTrack extends GameObject {
         }
     }
 
+    /**
+     * The sync method is empty because the road and barriers are static.
+     */
     syncMeshesToBodies() {
     }
 }
