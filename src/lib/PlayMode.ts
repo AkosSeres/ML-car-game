@@ -15,6 +15,7 @@ export class PlayMode implements Mode {
     keyupHandler: (e: any) => void;
     keydownHandler: (e: any) => void;
     arrowHelpers: THREE.ArrowHelper[] = [];
+    arrowLengths: number[] = [];
     chaseMode: boolean;
     private _showSensors: boolean = false;
 
@@ -80,12 +81,25 @@ export class PlayMode implements Mode {
             });
             const arrowHelper = this.arrowHelpers[idx];
             arrowHelper.setLength(distance, 0.05, 0.03);
+            this.arrowLengths[idx] = distance;
             arrowHelper.setDirection(ray.ray.direction);
             arrowHelper.position.x = ray.ray.origin.x;
             arrowHelper.position.y = ray.ray.origin.y;
             arrowHelper.position.z = ray.ray.origin.z;
             arrowHelper.updateMatrix();
+
+            const domElement = document.getElementById("arrow-length-indicator-" + idx);
+            domElement.style.width = (distance * 100) + "%";
+            domElement.innerText = distance.toFixed(2);
         });
+
+        if (this.car) {
+            let forwardDir = this.car.getForwardDir();
+            forwardDir.y = 0;
+            forwardDir.normalize();
+            let carVel = this.car.bodies[0].velocity;
+            document.getElementById("velocity-element").innerText = forwardDir.dot(new THREE.Vector3(carVel.x, carVel.y, carVel.z)).toFixed(2);
+        }
 
         if (this.chaseMode && this.car) {
             this.gameWorld.controls.target = this.car.getPosition();
@@ -120,8 +134,10 @@ export class PlayMode implements Mode {
 
         this.arrowHelpers.forEach((arrowHelper) => {
             this.gameWorld.scene.remove(arrowHelper);
+            arrowHelper.dispose();
         });
         this.arrowHelpers = [];
+        this.arrowLengths = [];
     }
 
     /**
@@ -152,6 +168,7 @@ export class PlayMode implements Mode {
             const arrowHelper = new THREE.ArrowHelper(dir, origin, length, hex);
             arrowHelper.visible = this.showSensors;
             this.gameWorld.scene.add(arrowHelper);
+            this.arrowLengths.push(length);
             return arrowHelper;
         });
     }

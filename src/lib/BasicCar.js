@@ -187,7 +187,7 @@ export class BasicCar extends GameObject {
 
         let middlePos = this.carBodyMesh.position.clone().add(forwardDir.clone().multiplyScalar(0.1));
 
-        let angles = [0, -15, 15, -30, 30, -45, 45, -60, 60, -75, 75, -90, 90].map(angle => angle * Math.PI / 180);
+        let angles = [0, -15, 15, -30, 30, -45, 45, -60, 60, -75, 75, -90, 90].map(angle => angle * Math.PI / 180).sort(function (a, b) { return a - b });
         let rays = angles.map(angle => {
             let dir = forwardDir.clone().multiplyScalar(Math.cos(angle)).add(sideDir.clone().multiplyScalar(Math.sin(angle)));
             let from = middlePos.clone().add(sideDir.clone().multiplyScalar(0.05 * Math.sin(angle)));

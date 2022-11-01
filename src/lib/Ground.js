@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import * as CANNON from "cannon-es";
 import { GameObject } from "./GameObject";
+import { BARRIER_RAYCAST_LAYER } from "./RaceTrack";
 
 const groundMaterial = new THREE.MeshPhongMaterial({ color: 0xffffff });
 
@@ -23,6 +24,7 @@ export class Ground extends GameObject {
         const mesh = new THREE.Mesh(geometry, groundMaterial);
         mesh.rotation.x = -Math.PI / 2;
         mesh.position.y = ylevel;
+        mesh.layers.enable(BARRIER_RAYCAST_LAYER);
         this.mesh = mesh;
         this.meshes.push(mesh);
         const shape = new CANNON.Plane();
