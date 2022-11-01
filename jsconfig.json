@@ -32,6 +32,9 @@
   "include": [
     "src/**/*.d.ts",
     "src/**/*.js",
-    "src/**/*.svelte"
-, "src/lib/GameObject.js", "src/lib/Mode.ts", "src/lib/GameWorld.ts"  ]
+    "src/**/*.svelte",
+    "src/lib/GameObject.js",
+    "src/lib/Mode.ts",
+    "src/lib/GameWorld.ts"
+  ]
 }

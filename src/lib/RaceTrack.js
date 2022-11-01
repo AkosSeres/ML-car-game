@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import * as CANNON from "cannon-es";
+import Offset from "polygon-offset";
 import { BoxObject, GameObject } from "./GameObject";
 
 export const BARRIER_RAYCAST_LAYER = 4;
@@ -27,9 +28,56 @@ export class RaceTrack extends GameObject {
     constructor(roadPoints, roadWidth = 1.0, resolution = 0.15) {
         super();
         /** @type {THREE.CatmullRomCurve3} */
-        this.roadSpline = new THREE.CatmullRomCurve3(roadPoints, false, "catmullrom", 0.3);
+        this.roadSpline = new THREE.CatmullRomCurve3(roadPoints, false, "catmullrom", 0.5);
         this.roadWidth = roadWidth;
         this.roadLength = this.roadSpline.getLength();
+
+        let offset = new Offset();
+        let barrierMaterial = new THREE.MeshLambertMaterial({
+            color: 0xffea00,
+            wireframe: false,
+        });
+        const barrierBody = new CANNON.Body({ mass: 0 });
+        const points = this.roadSpline.getSpacedPoints(this.roadLength / resolution).map((p) => [p.x, p.z]);
+        // const points = roadPoints.map((p) => [p.x, p.z]);
+        const polyLine = offset.data(points).arcSegments(20).offsetLine(roadWidth / 2).map(pl => pl.map((p) => new THREE.Vector3(p[0], 0, p[1])));
+
+        const mshape = new THREE.Shape(polyLine[0].map(p => new THREE.Vector2(p.x, p.z)));
+
+        for (let ii = 0; ii < polyLine.length; ii++) {
+            const line = polyLine[ii];
+            if (ii > 0) mshape.holes.push(new THREE.Path(line.map(p => new THREE.Vector2(p.x, p.z))));
+            for (let i = 1; i < line.length; i++) {
+                let t = line[i].clone().sub(line[i - 1]);
+                let p = line[i]
+                    .clone()
+                    .add(line[i - 1])
+                    .divideScalar(2);
+                let barrier = new BoxObject(
+                    p.x,
+                    p.y + 0.1,
+                    p.z,
+                    t.length(),
+                    0.2,
+                    0.01,
+                    barrierMaterial,
+                    0
+                );
+                barrier.rotateY(Math.atan2(-t.z, t.x));
+                barrier.meshes[0].layers.enable(BARRIER_RAYCAST_LAYER);
+                barrier.meshes[0].receiveShadow = false;
+                barrierBody.addShape(barrier.bodies[0].shapes[0], barrier.bodies[0].position, barrier.bodies[0].quaternion);
+                this.meshes.push(barrier.meshes[0]);
+            }
+        }
+
+        let roadGeom = new THREE.ShapeGeometry(mshape);
+        let road = new THREE.Mesh(roadGeom, roadMaterial);
+        road.rotateX(Math.PI / 2);
+        road.scale.setZ(-1);
+        road.translateZ(-0.01);
+        road.receiveShadow = true;
+        this.meshes.push(road);
 
         let arcLen = this.roadSpline.getLength();
         let roadLineNum = Math.floor(arcLen / roadLineLen / 2);
@@ -47,108 +95,11 @@ export class RaceTrack extends GameObject {
             this.meshes.push(lineMesh);
         }
 
-        let extrudeSettings = {
-            steps: Math.floor(this.roadSpline.getLength() / resolution),
-            bevelEnabled: false,
-            extrudePath: this.roadSpline,
-        };
-
-        let pts = [new THREE.Vector2(0, -roadWidth / 2), new THREE.Vector2(0, this.roadWidth / 2)];
-        let shape = new THREE.Shape(pts);
-        let geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-        let roadMesh = new THREE.Mesh(geometry, roadMaterial);
-        roadMesh.translateY(0.01);
-        this.meshes.push(roadMesh);
-
-        {
-            let barrierMaterial = new THREE.MeshLambertMaterial({
-                color: 0xffea00,
-                wireframe: false,
-            });
-            const barrierBody = new CANNON.Body({ mass: 0 });
-
-            /** @type {THREE.Vector3[]} */
-            const leftPoints = [];
-            for (
-                let i = 6;
-                i < geometry.attributes.position.array.length / 2;
-                i += 9
-            ) {
-                leftPoints.push(
-                    new THREE.Vector3(
-                        geometry.attributes.position.array[i],
-                        geometry.attributes.position.array[i + 1],
-                        geometry.attributes.position.array[i + 2]
-                    )
-                );
-            }
-            for (let i = 1; i < leftPoints.length; i++) {
-                let t = leftPoints[i].clone().sub(leftPoints[i - 1]);
-                let p = leftPoints[i]
-                    .clone()
-                    .add(leftPoints[i - 1])
-                    .divideScalar(2);
-                let barrier = new BoxObject(
-                    p.x,
-                    p.y + 0.1,
-                    p.z,
-                    t.length(),
-                    0.2,
-                    0.01,
-                    barrierMaterial,
-                    0
-                );
-                barrier.rotateY(Math.atan2(-t.z, t.x));
-                barrier.meshes[0].layers.enable(BARRIER_RAYCAST_LAYER);
-                barrier.meshes[0].receiveShadow = false;
-                barrierBody.addShape(barrier.bodies[0].shapes[0], barrier.bodies[0].position, barrier.bodies[0].quaternion);
-                this.meshes.push(barrier.meshes[0]);
-            }
-
-            /** @type {THREE.Vector3[]} */
-            const rightPoints = [];
-            for (
-                let i = 3;
-                i < geometry.attributes.position.array.length / 2;
-                i += 9
-            ) {
-                rightPoints.push(
-                    new THREE.Vector3(
-                        geometry.attributes.position.array[i],
-                        geometry.attributes.position.array[i + 1],
-                        geometry.attributes.position.array[i + 2]
-                    )
-                );
-            }
-            for (let i = 1; i < rightPoints.length; i++) {
-                let t = rightPoints[i].clone().sub(rightPoints[i - 1]);
-                let p = rightPoints[i]
-                    .clone()
-                    .add(rightPoints[i - 1])
-                    .divideScalar(2);
-                let barrier = new BoxObject(
-                    p.x,
-                    p.y + 0.1,
-                    p.z,
-                    t.length(),
-                    0.2,
-                    0.01,
-                    barrierMaterial,
-                    0
-                );
-                barrier.rotateY(Math.atan2(-t.z, t.x));
-                barrier.meshes[0].layers.enable(BARRIER_RAYCAST_LAYER);
-                barrier.meshes[0].receiveShadow = false;
-                barrierBody.addShape(barrier.bodies[0].shapes[0], barrier.bodies[0].position, barrier.bodies[0].quaternion);
-                this.meshes.push(barrier.meshes[0]);
-            }
-
-            barrierBody.collisionFilterGroup =
-                BARRIER_COLLISION_FILTER_GROUP;
-            barrierBody.collisionFilterMask =
-                ~BARRIER_COLLISION_FILTER_GROUP;
-            this.bodies.push(barrierBody);
-        }
+        barrierBody.collisionFilterGroup =
+            BARRIER_COLLISION_FILTER_GROUP;
+        barrierBody.collisionFilterMask =
+            ~BARRIER_COLLISION_FILTER_GROUP;
+        this.bodies.push(barrierBody);
     }
 
     /**
