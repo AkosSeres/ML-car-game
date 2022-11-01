@@ -16,6 +16,7 @@ export class PlayMode implements Mode {
     keydownHandler: (e: any) => void;
     arrowHelpers: THREE.Mesh[] = [];
     chaseMode: boolean;
+    private _showSensors: boolean = false;
 
     constructor(gameWorld) {
         this.gameWorld = gameWorld;
@@ -99,6 +100,17 @@ export class PlayMode implements Mode {
         }
     }
 
+    get showSensors() {
+        return this._showSensors;
+    }
+
+    set showSensors(show: boolean) {
+        this._showSensors = show;
+        this.arrowHelpers.forEach((arrowHelper) => {
+            arrowHelper.visible = show;
+        });
+    }
+
     /**
      * Removes the car from the scene if it exists.
      */
@@ -138,6 +150,7 @@ export class PlayMode implements Mode {
             const length = dir.length();
             const hex = 0xffff00;
             const arrowHelper = new THREE.ArrowHelper(dir, origin, length, hex);
+            arrowHelper.visible = this.showSensors;
             this.gameWorld.scene.add(arrowHelper);
             return arrowHelper;
         });
