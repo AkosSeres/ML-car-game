@@ -197,6 +197,26 @@ export class BasicCar extends GameObject {
         return rays;
     }
 
+    /**
+     * Returns the position of the car.
+     * 
+     * @return {THREE.Vector3} The position of the car.
+     */
+    getPosition() {
+        return this.carBodyMesh.position.clone();
+    }
+
+    /**
+     * Returns the forward direction of the car.
+     * 
+     * @return {THREE.Vector3} The forward direction of the car.
+     */
+    getForwardDir() {
+        let forwardDir1 = this.wheelLFMesh.position.clone().sub(this.wheelLBMesh.position).normalize();
+        let forwardDir2 = this.wheelRFMesh.position.clone().sub(this.wheelRBMesh.position).normalize();
+        return forwardDir1.clone().add(forwardDir2).divideScalar(2);
+    }
+
 
     /**
      * Applies the given inputs to the car body.

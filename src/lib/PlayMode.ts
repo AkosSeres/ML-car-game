@@ -15,9 +15,11 @@ export class PlayMode implements Mode {
     keyupHandler: (e: any) => void;
     keydownHandler: (e: any) => void;
     arrowHelpers: THREE.Mesh[];
+    chaseMode: boolean;
 
     constructor(gameWorld) {
         this.gameWorld = gameWorld;
+        this.chaseMode = false;
         let W = false,
             A = false,
             S = false,
@@ -83,6 +85,18 @@ export class PlayMode implements Mode {
             arrowHelper.position.z = ray.ray.origin.z;
             arrowHelper.updateMatrix();
         });
+
+        if (this.chaseMode && this.car) {
+            this.gameWorld.controls.target = this.car.getPosition();
+            this.gameWorld.controls.target.y += 0.2;
+            let fwd = this.car.getForwardDir();
+            fwd.y = 0;
+            fwd.normalize();
+            fwd.multiplyScalar(-0.5);
+            fwd.y = 0.2;
+            this.gameWorld.camera.position.copy(this.car.getPosition());
+            this.gameWorld.camera.position.add(fwd);
+        }
     }
 
     activate() {
