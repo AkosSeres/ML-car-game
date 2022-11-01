@@ -14,7 +14,7 @@ export class PlayMode implements Mode {
     car?: BasicCar;
     keyupHandler: (e: any) => void;
     keydownHandler: (e: any) => void;
-    arrowHelpers: THREE.Mesh[];
+    arrowHelpers: THREE.Mesh[] = [];
     chaseMode: boolean;
 
     constructor(gameWorld) {
@@ -99,7 +99,25 @@ export class PlayMode implements Mode {
         }
     }
 
-    activate() {
+    /**
+     * Removes the car from the scene if it exists.
+     */
+    removeCar() {
+        if (this.car) this.gameWorld.removeGameObject(this.car);
+        delete this.car;
+
+        this.arrowHelpers.forEach((arrowHelper) => {
+            this.gameWorld.scene.remove(arrowHelper);
+        });
+        this.arrowHelpers = [];
+    }
+
+    /**
+     * Creates a new car and adds it to the scene. It it is already present, it is removed first.
+     */
+    respawnCar() {
+        this.removeCar();
+
         this.car = new BasicCar(
             this.gameWorld.raceTrack.startX,
             0.4,
@@ -123,19 +141,17 @@ export class PlayMode implements Mode {
             this.gameWorld.scene.add(arrowHelper);
             return arrowHelper;
         });
+    }
+
+    activate() {
+        this.respawnCar();
 
         document.addEventListener("keydown", this.keydownHandler);
         document.addEventListener("keyup", this.keyupHandler);
     }
 
     deactivate() {
-        this.gameWorld.removeGameObject(this.car);
-        delete this.car;
-
-        this.arrowHelpers.forEach((arrowHelper) => {
-            this.gameWorld.scene.remove(arrowHelper);
-        });
-        this.arrowHelpers = [];
+        this.removeCar();
 
         document.removeEventListener("keydown", this.keydownHandler);
         document.removeEventListener("keyup", this.keyupHandler);
