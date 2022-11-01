@@ -54,7 +54,6 @@ export class DrawMode implements Mode {
         this.rings = [];
         this.mouseDown = false;
         this.onMouseUp = (e) => {
-            console.log("mouse up");
             if (e.button === 0) {
                 this.endDrawing();
             }
@@ -104,10 +103,12 @@ export class DrawMode implements Mode {
     endDrawing() {
         this.mouseDown = false;
 
-        this.gameWorld.removeGameObject(this.road);
-        this.roadPoints = this.rings.map(r => r.position);
-        this.road = new RaceTrack(this.roadPoints, this.brushSize);
-        this.gameWorld.addGameObject(this.road);
+        if (this.rings.length > 3) {
+            this.gameWorld.removeGameObject(this.road);
+            this.roadPoints = this.rings.map(r => r.position);
+            this.road = new RaceTrack(this.roadPoints, this.brushSize);
+            this.gameWorld.addGameObject(this.road);
+        }
 
         this.rings.forEach(r => { this.gameWorld.scene.remove(r) });
         this.rings = [];
