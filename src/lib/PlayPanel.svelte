@@ -22,7 +22,7 @@
     <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300"
         >Chase camera</span
     >
-</label>
+</label><br />
 
 <label
     for="show-sensors-toggle"
