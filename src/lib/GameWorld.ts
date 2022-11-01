@@ -3,6 +3,7 @@ import * as CANNON from "cannon-es";
 import { OrbitControls } from "three/addons/controls/OrbitControls";
 import { GameObject } from "./GameObject";
 import { Ground } from "./Ground";
+import { RaceTrack } from "./RaceTrack";
 
 /**
  * Class representing a game world. It contains and manages the renderer and the physics engine.
@@ -20,6 +21,7 @@ export class GameWorld {
     resizeFunction: EventListenerOrEventListenerObject | undefined;
     callback: (delta: number) => void;
     ground: Ground;
+    raceTrack: RaceTrack;
 
     /**
      * Creates the game world by initializing the three.js scene and camera.

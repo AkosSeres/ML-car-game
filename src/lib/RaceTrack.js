@@ -13,6 +13,8 @@ const roadMaterial = new THREE.MeshLambertMaterial({
     color: 0x515151,
     wireframe: false,
 });
+const startMaterial = new THREE.MeshPhongMaterial({ color: 0xffa500 });
+const finishMaterial = new THREE.MeshPhongMaterial({ color: 0x00ff00 });
 
 /**
  * A GameObject that is a race track with road and barriers.
@@ -38,7 +40,7 @@ export class RaceTrack extends GameObject {
             wireframe: false,
         });
         const barrierBody = new CANNON.Body({ mass: 0 });
-        const points = this.roadSpline.getSpacedPoints(this.roadLength / resolution).map((p) => [p.x, p.z]);
+        const points = this.roadSpline.getSpacedPoints(Math.floor(this.roadLength / resolution)).map((p) => [p.x, p.z]);
         // const points = roadPoints.map((p) => [p.x, p.z]);
         const polyLine = offset.data(points).arcSegments(20).offsetLine(roadWidth / 2).map(pl => pl.map((p) => new THREE.Vector3(p[0], 0, p[1])));
 
@@ -95,11 +97,28 @@ export class RaceTrack extends GameObject {
             this.meshes.push(lineMesh);
         }
 
+        const geometry = new THREE.CircleGeometry(this.roadWidth / 2, 16);
+        geometry.rotateX(-Math.PI / 2);
+        geometry.translate(roadPoints[0].x, 0.025, roadPoints[0].z);
+        const circle = new THREE.Mesh(geometry, startMaterial);
+        this.meshes.push(circle);
+        const geometryEnd = new THREE.CircleGeometry(this.roadWidth / 2, 16);
+        geometryEnd.rotateX(-Math.PI / 2);
+        geometryEnd.translate(roadPoints[roadPoints.length - 1].x, 0.025, roadPoints[roadPoints.length - 1].z);
+        const circleFinish = new THREE.Mesh(geometryEnd, finishMaterial);
+        this.meshes.push(circleFinish);
+
         barrierBody.collisionFilterGroup =
             BARRIER_COLLISION_FILTER_GROUP;
         barrierBody.collisionFilterMask =
             ~BARRIER_COLLISION_FILTER_GROUP;
         this.bodies.push(barrierBody);
+
+        this.startX = roadPoints[0].x;
+        this.startZ = roadPoints[0].z;
+        this.startRotation = -Math.atan2(roadPoints[roadPoints.length - 1].x - roadPoints[roadPoints.length - 2].x, roadPoints[roadPoints.length - 1].z - roadPoints[roadPoints.length - 2].z);
+        this.endX = roadPoints[roadPoints.length - 1].x;
+        this.endZ = roadPoints[roadPoints.length - 1].z;
     }
 
     /**

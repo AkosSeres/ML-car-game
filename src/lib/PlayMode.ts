@@ -101,15 +101,16 @@ export class PlayMode implements Mode {
 
     activate() {
         this.car = new BasicCar(
-            -0.2,
+            this.gameWorld.raceTrack.startX,
             0.4,
-            -0.2,
+            this.gameWorld.raceTrack.startZ,
             carBodyMaterial,
             carWheelMaterial,
             5,
             0.25,
             0.1
         );
+        this.car.rotateY(this.gameWorld.raceTrack.startRotation);
         this.gameWorld.addGameObject(this.car);
 
         this.arrowHelpers = this.car.getRays().map((ray) => {

@@ -37,6 +37,7 @@ export class DrawMode implements Mode {
         ];
         this.road = new RaceTrack(this.roadPoints, 1.0);
         this.gameWorld.addGameObject(this.road);
+        this.gameWorld.raceTrack = this.road;
 
         this.raycaster = new THREE.Raycaster();
         this.pointer = new THREE.Vector2(0, 0);
@@ -108,6 +109,7 @@ export class DrawMode implements Mode {
             this.roadPoints = this.rings.map(r => r.position);
             this.road = new RaceTrack(this.roadPoints, this.brushSize);
             this.gameWorld.addGameObject(this.road);
+            this.gameWorld.raceTrack = this.road;
         }
 
         this.rings.forEach(r => { this.gameWorld.scene.remove(r) });

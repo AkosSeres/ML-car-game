@@ -217,6 +217,11 @@ export class BasicCar extends GameObject {
         return forwardDir1.clone().add(forwardDir2).divideScalar(2);
     }
 
+    rotateY(angle) {
+        this.bodies.forEach(body => {
+            body.quaternion = body.quaternion.mult(new CANNON.Quaternion().setFromAxisAngle(new CANNON.Vec3(0, 1, 0), -angle));
+        });
+    }
 
     /**
      * Applies the given inputs to the car body.
