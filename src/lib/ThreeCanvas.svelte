@@ -1,15 +1,10 @@
-<script>
-    import * as THREE from "three";
-    import * as CANNON from "cannon-es";
+<script lang="ts">
     import { onMount } from "svelte";
-    import { BoxObject, SphereObject } from "./GameObject";
     import { GameWorld } from "./GameWorld";
-    import { BasicCar, CAR_COLLISION_FILTER_GROUP } from "./BasicCar";
     import { gameWorldStore } from "./stores";
 
-    let canvas;
-    /** @type {GameWorld} */
-    let gameWorld;
+    let canvas: HTMLCanvasElement;
+    let gameWorld: GameWorld;
 
     onMount(() => {
         gameWorld = new GameWorld(canvas);

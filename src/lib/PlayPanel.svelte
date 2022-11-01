@@ -1,8 +1,7 @@
-<script>
-    import { PlayMode } from "./PlayMode";
+<script lang="ts">
+    import type { PlayMode } from "./PlayMode";
 
-    /** @type {PlayMode} */
-    export let mode;
+    export let mode: PlayMode;
 </script>
 
 <label

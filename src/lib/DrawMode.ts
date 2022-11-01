@@ -1,14 +1,22 @@
-import { GameWorld } from "./GameWorld";
-import { Mode } from "./Mode";
+import type { GameWorld } from "./GameWorld";
+import type { Mode } from "./Mode";
 import { RaceTrack } from "./RaceTrack";
 import * as THREE from "three";
 
 const ringGeometry = new THREE.RingGeometry(0.45, 0.5, 32, 1);
 ringGeometry.rotateX(Math.PI / 2);
 const cursorRingMaterial = new THREE.MeshBasicMaterial({ color: 0x000000, side: THREE.DoubleSide });
+cursorRingMaterial.depthTest = false;
+cursorRingMaterial.depthWrite = false;
 const startRingMaterial = new THREE.MeshBasicMaterial({ color: 0xFFA500, side: THREE.DoubleSide });
+startRingMaterial.depthTest = false;
+startRingMaterial.depthWrite = false;
 const endRingMaterial = new THREE.MeshBasicMaterial({ color: 0x00FF00, side: THREE.DoubleSide });
+endRingMaterial.depthTest = false;
+endRingMaterial.depthWrite = false;
 const midRingMaterial = new THREE.MeshBasicMaterial({ color: 0x0000FF, side: THREE.DoubleSide });
+midRingMaterial.depthTest = false;
+midRingMaterial.depthWrite = false;
 
 export class DrawMode implements Mode {
     gameWorld: GameWorld;
@@ -50,8 +58,6 @@ export class DrawMode implements Mode {
         this.ring.castShadow = false;
         this.ring.receiveShadow = false;
         this.ring.renderOrder = 999;
-        this.ring.material.depthTest = false;
-        this.ring.material.depthWrite = false;
         this.rings = [];
         this.mouseDown = false;
         this.onMouseUp = (e) => {
@@ -76,8 +82,6 @@ export class DrawMode implements Mode {
         startRing.castShadow = false;
         startRing.receiveShadow = false;
         startRing.renderOrder = 999;
-        startRing.material.depthTest = false;
-        startRing.material.depthWrite = false;
         startRing.position.copy(this.ring.position);
         this.rings = [startRing];
         this.gameWorld.scene.add(startRing);
@@ -94,8 +98,6 @@ export class DrawMode implements Mode {
         midRing.castShadow = false;
         midRing.receiveShadow = false;
         midRing.renderOrder = 999;
-        midRing.material.depthTest = false;
-        midRing.material.depthWrite = false;
         midRing.position.copy(this.ring.position);
         this.rings.push(midRing);
         this.gameWorld.scene.add(midRing);

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import ThreeCanvas from "./lib/ThreeCanvas.svelte";
   import Tabs from "./lib/Tabs.svelte";
 </script>

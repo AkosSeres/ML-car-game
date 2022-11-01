@@ -1,5 +1,5 @@
-import { GameWorld } from "./GameWorld";
-import { Mode } from "./Mode";
+import type { GameWorld } from "./GameWorld";
+import type { Mode } from "./Mode";
 
 export class TrainMode implements Mode {
     gameWorld: GameWorld;

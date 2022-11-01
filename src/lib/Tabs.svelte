@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import DrawPanel from "./DrawPanel.svelte";
     import PlayPanel from "./PlayPanel.svelte";
     import TrainPanel from "./TrainPanel.svelte";
@@ -6,15 +6,16 @@
     import { PlayMode } from "./PlayMode";
     import { TrainMode } from "./TrainMode";
     import { gameWorldStore } from "./stores";
+    import type { Mode } from "./Mode";
+    import type { GameWorld } from "./GameWorld";
 
     const defaultTab = 2;
     const titles = ["Draw", "Play", "Train"];
     const panels = [DrawPanel, PlayPanel, TrainPanel];
-    /** @type {import("./Mode").Mode[]} */
-    const modes = [];
+    const modes: Mode[] = [];
 
     let activeTab = -1;
-    let gameWorld;
+    let gameWorld: GameWorld;
 
     gameWorldStore.subscribe((gameWorldNew) => {
         if (gameWorldNew) {
@@ -26,7 +27,7 @@
         }
     });
 
-    function setActiveTab(num) {
+    function setActiveTab(num: number) {
         if (activeTab === num) return;
         if (activeTab !== -1) modes[activeTab].deactivate();
         activeTab = num;

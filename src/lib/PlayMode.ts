@@ -1,6 +1,6 @@
 import * as THREE from "three";
-import { GameWorld } from "./GameWorld";
-import { Mode } from "./Mode";
+import type { GameWorld } from "./GameWorld";
+import type { Mode } from "./Mode";
 import { BasicCar } from "./BasicCar";
 import { BARRIER_RAYCAST_LAYER } from "./RaceTrack";
 
@@ -14,7 +14,7 @@ export class PlayMode implements Mode {
     car?: BasicCar;
     keyupHandler: (e: any) => void;
     keydownHandler: (e: any) => void;
-    arrowHelpers: THREE.Mesh[] = [];
+    arrowHelpers: THREE.ArrowHelper[] = [];
     chaseMode: boolean;
     private _showSensors: boolean = false;
 

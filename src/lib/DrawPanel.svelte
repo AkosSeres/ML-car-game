@@ -1,8 +1,7 @@
-<script>
-    import { DrawMode } from "./DrawMode";
+<script lang="ts">
+    import type { DrawMode } from "./DrawMode";
 
-    /** @type {DrawMode} */
-    export let mode;
+    export let mode: DrawMode;
 </script>
 
 <label for="steps-range" class="block mb-2 text-sm font-medium text-gray-300"

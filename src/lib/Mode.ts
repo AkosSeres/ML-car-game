@@ -1,4 +1,4 @@
-import { GameWorld } from "./GameWorld";
+import type { GameWorld } from "./GameWorld";
 
 export interface Mode {
     gameWorld: GameWorld;
