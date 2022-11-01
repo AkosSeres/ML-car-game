@@ -116,7 +116,8 @@ export class RaceTrack extends GameObject {
 
         this.startX = roadPoints[0].x;
         this.startZ = roadPoints[0].z;
-        this.startRotation = -Math.atan2(roadPoints[roadPoints.length - 1].x - roadPoints[roadPoints.length - 2].x, roadPoints[roadPoints.length - 1].z - roadPoints[roadPoints.length - 2].z);
+        const startTangent = this.roadSpline.getTangentAt(0);
+        this.startRotation = -Math.atan2(-startTangent.z, startTangent.x) + Math.PI / 2;
         this.endX = roadPoints[roadPoints.length - 1].x;
         this.endZ = roadPoints[roadPoints.length - 1].z;
     }
