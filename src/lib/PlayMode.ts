@@ -17,64 +17,62 @@ export class PlayMode implements Mode {
     arrowHelpers: THREE.ArrowHelper[] = [];
     arrowLengths: number[] = [];
     chaseMode: boolean = true;
+    W: boolean = false;
+    A: boolean = false;
+    S: boolean = false;
+    D: boolean = false;
+    SPACE: boolean = false;
     private _showSensors: boolean = false;
 
     constructor(gameWorld) {
         this.gameWorld = gameWorld;
-        let W = false,
-            A = false,
-            S = false,
-            D = false,
-            SPACE = false;
         this.keydownHandler = (e) => {
             switch (e.key) {
                 case "w":
-                    W = true;
+                    this.W = true;
                     e.preventDefault();
                     break;
                 case "a":
-                    A = true;
+                    this.A = true;
                     e.preventDefault();
                     break;
                 case "s":
-                    S = true;
+                    this.S = true;
                     e.preventDefault();
                     break;
                 case "d":
-                    D = true;
+                    this.D = true;
                     e.preventDefault();
                     break;
                 case " ":
-                    SPACE = true;
+                    this.SPACE = true;
                     e.preventDefault();
                     break;
             }
-            this.car?.applyInput(W, A, S, D, SPACE);
         };
         this.keyupHandler = (e) => {
             switch (e.key) {
                 case "w":
-                    W = false;
+                    this.W = false;
                     e.preventDefault();
                     break;
                 case "a":
-                    A = false;
+                    this.A = false;
                     e.preventDefault();
                     break;
                 case "s":
-                    S = false;
+                    this.S = false;
                     e.preventDefault();
                     break;
                 case "d":
-                    D = false;
+                    this.D = false;
                     e.preventDefault();
                     break;
                 case " ":
-                    SPACE = false;
+                    this.SPACE = false;
                     e.preventDefault();
                     break;
             }
-            this.car?.applyInput(W, A, S, D, SPACE);
         };
     }
 
@@ -100,6 +98,8 @@ export class PlayMode implements Mode {
             const domElement = document.getElementById("arrow-length-indicator-" + idx);
             domElement.style.width = (distance * 100) + "%";
             domElement.innerText = distance.toFixed(2);
+
+            this.car?.applyInput(this.W, this.A, this.S, this.D, this.SPACE);
         });
 
         if (this.car) {
@@ -183,6 +183,7 @@ export class PlayMode implements Mode {
     }
 
     activate() {
+        this.W = this.A = this.S = this.D = this.SPACE = false;
         this.respawnCar();
 
         document.addEventListener("keydown", this.keydownHandler);
