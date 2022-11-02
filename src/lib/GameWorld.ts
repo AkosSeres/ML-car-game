@@ -140,9 +140,9 @@ export class GameWorld {
             0.01,
             100
         );
-        this.camera.position.z = 4;
-        this.camera.position.y = 4;
-        this.camera.position.x = 4;
+        this.camera.position.z = 6;
+        this.camera.position.y = 3;
+        this.camera.position.x = 6;
         this.cameraPosition = this.camera.position.clone();
         this.cameraQuaternion = this.camera.quaternion.clone();
     }

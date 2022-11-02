@@ -16,12 +16,11 @@ export class PlayMode implements Mode {
     keydownHandler: (e: any) => void;
     arrowHelpers: THREE.ArrowHelper[] = [];
     arrowLengths: number[] = [];
-    chaseMode: boolean;
+    chaseMode: boolean = true;
     private _showSensors: boolean = false;
 
     constructor(gameWorld) {
         this.gameWorld = gameWorld;
-        this.chaseMode = false;
         let W = false,
             A = false,
             S = false,

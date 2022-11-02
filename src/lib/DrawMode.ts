@@ -131,6 +131,8 @@ export class DrawMode implements Mode {
         this.ring.scale.set(this.brushSize, this.brushSize, this.brushSize);
 
         if (this.mouseDown) this.addDrawing();
+
+        this.gameWorld.controls.target.set(0, 0, 0);
     }
 
     activate() {
@@ -139,7 +141,7 @@ export class DrawMode implements Mode {
         this.gameWorld.controls.maxAzimuthAngle = 0;
         this.gameWorld.controls.minDistance = 8;
         this.gameWorld.controls.maxDistance = 8;
-        this.gameWorld.controls.target = new THREE.Vector3(0, 0, 0);
+        this.gameWorld.controls.target.set(0, 0, 0);
 
         this.ring.visible = false;
         this.gameWorld.scene.add(this.ring);

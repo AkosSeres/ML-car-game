@@ -13,7 +13,7 @@ export class TrainMode implements Mode {
     }
 
     activate() {
-        // TODO
+        this.gameWorld.controls.reset();
     }
 
     deactivate() {
