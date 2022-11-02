@@ -31,18 +31,23 @@ export class PlayMode implements Mode {
             switch (e.key) {
                 case "w":
                     W = true;
+                    e.preventDefault();
                     break;
                 case "a":
                     A = true;
+                    e.preventDefault();
                     break;
                 case "s":
                     S = true;
+                    e.preventDefault();
                     break;
                 case "d":
                     D = true;
+                    e.preventDefault();
                     break;
                 case " ":
                     SPACE = true;
+                    e.preventDefault();
                     break;
             }
             this.car?.applyInput(W, A, S, D, SPACE);
@@ -51,18 +56,23 @@ export class PlayMode implements Mode {
             switch (e.key) {
                 case "w":
                     W = false;
+                    e.preventDefault();
                     break;
                 case "a":
                     A = false;
+                    e.preventDefault();
                     break;
                 case "s":
                     S = false;
+                    e.preventDefault();
                     break;
                 case "d":
                     D = false;
+                    e.preventDefault();
                     break;
                 case " ":
                     SPACE = false;
+                    e.preventDefault();
                     break;
             }
             this.car?.applyInput(W, A, S, D, SPACE);
