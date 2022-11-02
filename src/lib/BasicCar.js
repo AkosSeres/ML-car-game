@@ -233,23 +233,27 @@ export class BasicCar extends GameObject {
      * @param {boolean} SPACE Whether the SPACE key is pressed.
      */
     applyInput(W, A, S, D, SPACE) {
-        if (W) {
+        if (W && !S) {
             this.constraintLB.setMotorSpeed(100);
             this.constraintRB.setMotorSpeed(100);
-        } else if (S) {
+        }
+        if (S && !W) {
             this.constraintLB.setMotorSpeed(-20);
             this.constraintRB.setMotorSpeed(-20);
-        } else {
+        }
+        if ((!W && !S) || (W && S)) {
             this.constraintLB.setMotorSpeed(0);
             this.constraintRB.setMotorSpeed(0);
         }
-        if (A) {
+        if (A && !D) {
             this.constraintLF.axisA.z = -0.5;
             this.constraintRF.axisA.z = -0.5;
-        } else if (D) {
+        }
+        if (D && !A) {
             this.constraintLF.axisA.z = 0.5;
             this.constraintRF.axisA.z = 0.5;
-        } else {
+        }
+        if ((!A && !D) || (A && D)) {
             this.constraintLF.axisA.z = 0;
             this.constraintRF.axisA.z = 0;
         }
