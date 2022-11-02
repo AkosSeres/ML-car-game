@@ -10,7 +10,7 @@
     import type { GameWorld } from "./GameWorld";
 
     const defaultTab = 2;
-    const titles = ["Draw", "Play", "Train"];
+    const titles = ["Draw", "Play", "Train", "Teach"];
     const panels = [DrawPanel, PlayPanel, TrainPanel];
     const modes: Mode[] = [];
 

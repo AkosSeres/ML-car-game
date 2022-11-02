@@ -95,9 +95,11 @@ export class PlayMode implements Mode {
             arrowHelper.position.z = ray.ray.origin.z;
             arrowHelper.updateMatrix();
 
-            const domElement = document.getElementById("arrow-length-indicator-" + idx);
-            domElement.style.width = (distance * 100) + "%";
-            domElement.innerText = distance.toFixed(2);
+            const domElement = document.getElementById("arrow-length-indicator-" + idx)
+            if (domElement) {
+                domElement.style.width = (distance * 100) + "%";
+                domElement.innerText = distance.toFixed(2);
+            }
 
             this.car?.applyInput(this.W, this.A, this.S, this.D, this.SPACE);
         });

@@ -259,12 +259,12 @@ export class BasicCar extends GameObject {
             this.constraintRB.setMotorSpeed(0);
         }
         if (A && !D) {
-            this.constraintLF.axisA.z = -0.5;
-            this.constraintRF.axisA.z = -0.5;
+            this.constraintLF.axisA.z = -0.25;
+            this.constraintRF.axisA.z = -0.25;
         }
         if (D && !A) {
-            this.constraintLF.axisA.z = 0.5;
-            this.constraintRF.axisA.z = 0.5;
+            this.constraintLF.axisA.z = 0.25;
+            this.constraintRF.axisA.z = 0.25;
         }
         if ((!A && !D) || (A && D)) {
             this.constraintLF.axisA.z = 0;
