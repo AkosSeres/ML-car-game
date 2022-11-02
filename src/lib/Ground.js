@@ -28,7 +28,12 @@ export class Ground extends GameObject {
         this.mesh = mesh;
         this.meshes.push(mesh);
         const shape = new CANNON.Plane();
-        const body = new CANNON.Body({ mass: 0 });
+        const body = new CANNON.Body({
+            mass: 0, material: new CANNON.Material({
+                friction: 0.12,
+                restitution: 0.5
+            })
+        });
         body.addShape(shape);
         body.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);
         body.position.y = ylevel;

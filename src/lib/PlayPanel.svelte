@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { PlayMode } from "./PlayMode";
+    import EnvironmentSetter from "./EnvironmentSetter.svelte";
 
     export let mode: PlayMode;
 </script>
@@ -68,6 +69,12 @@
         >Velocity: <span id="velocity-element" /></span
     >
 </div>
+
+<hr
+    class="my-4 mx-auto w-48 h-1 bg-gray-100 rounded border-0 dark:bg-gray-700"
+/>
+
+<EnvironmentSetter gameWorld={mode.gameWorld} />
 
 <hr
     class="my-4 mx-auto w-48 h-1 bg-gray-100 rounded border-0 dark:bg-gray-700"

@@ -143,6 +143,7 @@ export class PlayMode implements Mode {
 
         this.arrowHelpers.forEach((arrowHelper) => {
             this.gameWorld.scene.remove(arrowHelper);
+            // @ts-ignore
             arrowHelper.dispose();
         });
         this.arrowHelpers = [];

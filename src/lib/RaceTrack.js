@@ -39,7 +39,13 @@ export class RaceTrack extends GameObject {
             color: 0xffea00,
             wireframe: false,
         });
-        const barrierBody = new CANNON.Body({ mass: 0 });
+        const barrierBody = new CANNON.Body({
+            mass: 0,
+            material: new CANNON.Material({
+                friction: 0.15,
+                restitution: 0.25
+            }),
+        });
         const points = this.roadSpline.getSpacedPoints(Math.floor(this.roadLength / resolution)).map((p) => [p.x, p.z]);
         // const points = roadPoints.map((p) => [p.x, p.z]);
         const polyLine = offset.data(points).arcSegments(20).offsetLine(roadWidth / 2).map(pl => pl.map((p) => new THREE.Vector3(p[0], 0, p[1])));
@@ -113,6 +119,8 @@ export class RaceTrack extends GameObject {
         barrierBody.collisionFilterMask =
             ~BARRIER_COLLISION_FILTER_GROUP;
         this.bodies.push(barrierBody);
+        /** @type {CANNON.Body} */
+        this.barrrierBody = barrierBody;
 
         this.startX = roadPoints[0].x;
         this.startZ = roadPoints[0].z;
