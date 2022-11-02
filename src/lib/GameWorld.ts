@@ -1,7 +1,6 @@
 import * as THREE from "three";
 import * as CANNON from "cannon-es";
-// @ts-ignore
-import { OrbitControls } from "three/addons/controls/OrbitControls";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import type { GameObject } from "./GameObject";
 import { Ground } from "./Ground";
 import type { RaceTrack } from "./RaceTrack";
