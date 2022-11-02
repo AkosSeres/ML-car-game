@@ -2,16 +2,18 @@
     import DrawPanel from "./DrawPanel.svelte";
     import PlayPanel from "./PlayPanel.svelte";
     import TrainPanel from "./TrainPanel.svelte";
+    import TeachPanel from "./TeachPanel.svelte";
     import { DrawMode } from "./DrawMode";
     import { PlayMode } from "./PlayMode";
     import { TrainMode } from "./TrainMode";
+    import { TeachMode } from "./TeachMode";
     import { gameWorldStore } from "./stores";
     import type { Mode } from "./Mode";
     import type { GameWorld } from "./GameWorld";
 
     const defaultTab = 2;
     const titles = ["Draw", "Play", "Train", "Teach"];
-    const panels = [DrawPanel, PlayPanel, TrainPanel];
+    const panels = [DrawPanel, PlayPanel, TrainPanel, TeachPanel];
     const modes: Mode[] = [];
 
     let activeTab = -1;
@@ -23,6 +25,7 @@
             modes.push(new DrawMode(gameWorld));
             modes.push(new PlayMode(gameWorld));
             modes.push(new TrainMode(gameWorld));
+            modes.push(new TeachMode(gameWorld));
             setActiveTab(defaultTab);
         }
     });
