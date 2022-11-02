@@ -38,7 +38,10 @@
     }
 </script>
 
-<div class="inline-flex rounded-md shadow-sm w-full" role="group">
+<div
+    class="sticky top-0 z-50 inline-flex rounded-md shadow-sm w-full"
+    role="group"
+>
     {#each titles as title, i}
         <button
             on:click={() => setActiveTab(i)}

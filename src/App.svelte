@@ -7,7 +7,7 @@
   <div id="canvas-pane">
     <ThreeCanvas />
   </div>
-  <div id="menu-pane">
+  <div id="menu-pane" class="overflow-y-scroll">
     <Tabs />
   </div>
 </main>
