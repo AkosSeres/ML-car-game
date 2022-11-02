@@ -21,7 +21,7 @@ export class BasicCar extends GameObject {
         this.meshes.push(carBodyMesh);
         this.carBodyMesh = carBodyMesh;
         const carBodyShape = new CANNON.Box(new CANNON.Vec3(0.05, 0.05, 0.1));
-        const carBody = new CANNON.Body({ mass: mass / 2, collisionFilterGroup: CAR_COLLISION_FILTER_GROUP, collisionFilterMask: ~CAR_COLLISION_FILTER_GROUP });
+        const carBody = new CANNON.Body({ mass: mass / 2, allowSleep: false, collisionFilterGroup: CAR_COLLISION_FILTER_GROUP, collisionFilterMask: ~CAR_COLLISION_FILTER_GROUP });
         carBody.addShape(carBodyShape);
         carBody.position.x = carBodyMesh.position.x;
         carBody.position.y = carBodyMesh.position.y;
@@ -44,6 +44,7 @@ export class BasicCar extends GameObject {
         // wheelLFShape.transformAllPoints(new CANNON.Vec3(), new CANNON.Quaternion().setFromAxisAngle(new CANNON.Vec3(0, 0, 1), Math.PI / 2));
         const wheelLFBody = new CANNON.Body({
             mass: mass / 8,
+            allowSleep: false,
             material: wheelPhyMaterial,
             collisionFilterGroup: CAR_COLLISION_FILTER_GROUP,
             collisionFilterMask: ~CAR_COLLISION_FILTER_GROUP
@@ -67,7 +68,8 @@ export class BasicCar extends GameObject {
         this.wheelRFMesh = wheelRFMesh;
         const wheelRFShape = new CANNON.Sphere(0.033);
         const wheelRFBody = new CANNON.Body({
-            mass: 1,
+            mass: mass / 8,
+            allowSleep: false,
             material: wheelPhyMaterial,
             collisionFilterGroup: CAR_COLLISION_FILTER_GROUP,
             collisionFilterMask: ~CAR_COLLISION_FILTER_GROUP
@@ -91,7 +93,8 @@ export class BasicCar extends GameObject {
         this.wheelLBMesh = wheelLBMesh;
         const wheelLBShape = new CANNON.Sphere(0.04);
         const wheelLBBody = new CANNON.Body({
-            mass: 1,
+            mass: mass / 8,
+            allowSleep: false,
             material: wheelPhyMaterial,
             collisionFilterGroup: CAR_COLLISION_FILTER_GROUP,
             collisionFilterMask: ~CAR_COLLISION_FILTER_GROUP
@@ -115,7 +118,8 @@ export class BasicCar extends GameObject {
         this.wheelRBMesh = wheelRBMesh;
         const wheelRBShape = new CANNON.Sphere(0.04);
         const wheelRBBody = new CANNON.Body({
-            mass: 1,
+            mass: mass / 8,
+            allowSleep: false,
             material: wheelPhyMaterial,
             collisionFilterGroup: CAR_COLLISION_FILTER_GROUP,
             collisionFilterMask: ~CAR_COLLISION_FILTER_GROUP
