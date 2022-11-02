@@ -221,8 +221,17 @@ export class BasicCar extends GameObject {
         return forwardDir1.clone().add(forwardDir2).divideScalar(2);
     }
 
+    /**
+     * Rotates the car by the given angle around the y-axis.
+     * 
+     * @param {number} angle The angle to rotate the car by.
+     */
     rotateY(angle) {
+        const pos = this.getPosition();
         this.bodies.forEach(body => {
+            const relativePos = new THREE.Vector3(body.position.x, body.position.y, body.position.z).sub(pos);
+            relativePos.applyAxisAngle(new THREE.Vector3(0, 1, 0), angle);
+            body.position.set(relativePos.x + pos.x, relativePos.y + pos.y, relativePos.z + pos.z);
             body.quaternion = body.quaternion.mult(new CANNON.Quaternion().setFromAxisAngle(new CANNON.Vec3(0, 1, 0), -angle));
         });
     }
