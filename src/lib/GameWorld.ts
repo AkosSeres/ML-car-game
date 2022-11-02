@@ -63,8 +63,8 @@ export class GameWorld {
         this.world.step(delta);
         this.gameObjects.forEach(obj => obj.syncMeshesToBodies());
         this.controls.update();
-        this.cameraPosition.lerp(this.camera.position, 0.1 ** (delta / 0.016));
-        this.cameraQuaternion.slerp(this.camera.quaternion, 0.1 ** (delta / 0.016));
+        this.cameraPosition.lerp(this.camera.position, 0.1 ** (0.016 / delta));
+        this.cameraQuaternion.slerp(this.camera.quaternion, 0.1 ** (0.016 / delta));
         const camera = this.camera.clone();
         camera.position.copy(this.cameraPosition);
         camera.quaternion.copy(this.cameraQuaternion);
