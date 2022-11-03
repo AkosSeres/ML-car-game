@@ -4,6 +4,8 @@ import { GameObject } from "./GameObject";
 import { GameWorld } from "./GameWorld";
 import { BARRIER_RAYCAST_LAYER } from "./RaceTrack";
 
+const sensorAngles = [0, -15, 15, -30, 30, -45, 45, -60, 60, -75, 75, -90, 90].map(angle => angle * Math.PI / 180).sort(function (a, b) { return a - b });
+
 export const CAR_COLLISION_FILTER_GROUP = 8;
 
 export class BasicCar extends GameObject {
@@ -188,15 +190,13 @@ export class BasicCar extends GameObject {
 
         let middlePos = this.carBodyMesh.position.clone().add(forwardDir.clone().multiplyScalar(0.1));
 
-        let angles = [0, -15, 15, -30, 30, -45, 45, -60, 60, -75, 75, -90, 90].map(angle => angle * Math.PI / 180).sort(function (a, b) { return a - b });
-        let rays = angles.map(angle => {
+        return sensorAngles.map(angle => {
             let dir = forwardDir.clone().multiplyScalar(Math.cos(angle)).add(sideDir.clone().multiplyScalar(Math.sin(angle)));
             let from = middlePos.clone().add(sideDir.clone().multiplyScalar(0.05 * Math.sin(angle)));
             let ray = new THREE.Raycaster(from, dir, 0.01, 1.0);
             ray.layers.set(BARRIER_RAYCAST_LAYER);
             return ray;
         });
-        return rays;
     }
 
     /**
@@ -214,6 +214,13 @@ export class BasicCar extends GameObject {
             let direction = ray.ray.direction;
             return { distance, origin, direction };
         });
+    }
+
+    /**
+     * The number of sensors on the car type.
+     */
+    static get sensorNumber() {
+        return sensorAngles.length;
     }
 
     /**
