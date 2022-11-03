@@ -1,6 +1,8 @@
 import * as THREE from "three";
 import * as CANNON from "cannon-es";
 import { GameObject } from "./GameObject";
+import { GameWorld } from "./GameWorld";
+import { BARRIER_RAYCAST_LAYER } from "./RaceTrack";
 
 export const CAR_COLLISION_FILTER_GROUP = 8;
 
@@ -180,14 +182,9 @@ export class BasicCar extends GameObject {
      * 
      * @returns {THREE.Raycaster[]} The rays corresponding to the sensors on the car.
      */
-    getRays() {
-        let forwardDir1 = this.wheelLFMesh.position.clone().sub(this.wheelLBMesh.position).normalize();
-        let forwardDir2 = this.wheelRFMesh.position.clone().sub(this.wheelRBMesh.position).normalize();
-        let forwardDir = forwardDir1.clone().add(forwardDir2).divideScalar(2);
-        let sideDir1 = this.wheelLBMesh.position.clone().sub(this.wheelRBMesh.position).normalize();
-        let sideDir2 = this.wheelLFMesh.position.clone().sub(this.wheelRFMesh.position).normalize();
-        let sideDir = sideDir1.clone().add(sideDir2).normalize();
-        let upDir = forwardDir.clone().cross(sideDir);
+    getSensorRays() {
+        const forwardDir = this.getForwardDir();
+        const sideDir = this.getSideDir();
 
         let middlePos = this.carBodyMesh.position.clone().add(forwardDir.clone().multiplyScalar(0.1));
 
@@ -196,9 +193,40 @@ export class BasicCar extends GameObject {
             let dir = forwardDir.clone().multiplyScalar(Math.cos(angle)).add(sideDir.clone().multiplyScalar(Math.sin(angle)));
             let from = middlePos.clone().add(sideDir.clone().multiplyScalar(0.05 * Math.sin(angle)));
             let ray = new THREE.Raycaster(from, dir, 0.01, 1.0);
+            ray.layers.set(BARRIER_RAYCAST_LAYER);
             return ray;
         });
         return rays;
+    }
+
+    /**
+     * Returns the data from the sensors on the car.
+     * 
+     * @param {GameWorld} gameWorld The world to which the car belongs.
+     * @return {{distance: number, origin: THREE.Vector3, direction: THREE.Vector3}[]} The data from the sensors on the car.
+     */
+    getSensorData(gameWorld) {
+        const rays = this.getSensorRays();
+        return rays.map(ray => {
+            let intersects = ray.intersectObjects(gameWorld.scene.children);
+            let distance = intersects.length > 0 ? intersects[0].distance / ray.far : 1.0;
+            let origin = ray.ray.origin;
+            let direction = ray.ray.direction;
+            return { distance, origin, direction };
+        });
+    }
+
+    /**
+     * Returns the horizontal forward component of the car's velocity.
+     * 
+     * @returns {number} The horizontal forward component of the car's velocity.
+     */
+    getForwardVelocity() {
+        let forwardDir = this.getForwardDir();
+        forwardDir.y = 0;
+        forwardDir.normalize();
+        let carVel = this.bodies[0].velocity;
+        return forwardDir.x * carVel.x + forwardDir.z * carVel.z;
     }
 
     /**
@@ -219,6 +247,17 @@ export class BasicCar extends GameObject {
         let forwardDir1 = this.wheelLFMesh.position.clone().sub(this.wheelLBMesh.position).normalize();
         let forwardDir2 = this.wheelRFMesh.position.clone().sub(this.wheelRBMesh.position).normalize();
         return forwardDir1.clone().add(forwardDir2).divideScalar(2);
+    }
+
+    /**
+     * Returns the sideways direction of the car, pointing to the right.
+     * 
+     * @return {THREE.Vector3} The sideways (right) direction of the car.
+     */
+    getSideDir() {
+        let sideDir1 = this.wheelLBMesh.position.clone().sub(this.wheelRBMesh.position).normalize();
+        let sideDir2 = this.wheelLFMesh.position.clone().sub(this.wheelRFMesh.position).normalize();
+        return sideDir1.clone().add(sideDir2).divideScalar(2);
     }
 
     /**
