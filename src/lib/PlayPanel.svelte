@@ -52,14 +52,14 @@
         >Sensors</span
     >
 </div>
-{#each mode.arrowLengths as arrLen, idx}
+{#each mode.sensorData as sensorDatum, idx}
     <div class="w-full bg-gray-200 rounded-full dark:bg-gray-700">
         <div
             id={"arrow-length-indicator-" + idx}
             class="bg-blue-600 mb-px bg-gradient-to-r from-pink-300 via-purple-300 to-indigo-400 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full"
-            style="width: {arrLen * 100}%"
+            style="width: {sensorDatum.distance * 100}%"
         >
-            {arrLen.toFixed(2)}
+            {sensorDatum.distance.toFixed(2)}
         </div>
     </div>
 {/each}

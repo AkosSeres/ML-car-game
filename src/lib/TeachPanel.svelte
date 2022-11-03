@@ -14,7 +14,7 @@
     </button>
     <button
         type="button"
-        class="text-purple-700 hover:text-white grow flex-1 transition border border-purple-700 hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-r-lg text-sm px-2 py-1 text-center dark:border-purple-400 dark:text-purple-400 dark:hover:text-white dark:hover:bg-purple-500 dark:focus:ring-purple-900"
+        class="text-purple-700 hover:text-white grow flex-1 transition border border-purple-700 hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 font-bold rounded-r-lg text-sm px-2 py-1 text-center dark:border-purple-400 dark:text-purple-400 dark:hover:text-white dark:hover:bg-purple-500 dark:focus:ring-purple-900"
         >Test AI car</button
     >
 </div>
@@ -70,14 +70,14 @@
         >Sensors</span
     >
 </div>
-{#each mode.arrowLengths as arrLen, idx}
+{#each mode.sensorData as sensorDatum, idx}
     <div class="w-full bg-gray-200 rounded-full dark:bg-gray-700">
         <div
             id={"arrow-length-indicator-" + idx}
             class="bg-blue-600 mb-px bg-gradient-to-r from-pink-300 via-purple-300 to-indigo-400 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full"
-            style="width: {arrLen * 100}%"
+            style="width: {sensorDatum.distance * 100}%"
         >
-            {arrLen.toFixed(2)}
+            {sensorDatum.distance.toFixed(2)}
         </div>
     </div>
 {/each}

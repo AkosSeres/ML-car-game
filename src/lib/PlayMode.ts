@@ -15,7 +15,7 @@ export class PlayMode implements Mode {
     keyupHandler: (e: any) => void;
     keydownHandler: (e: any) => void;
     arrowHelpers: THREE.ArrowHelper[] = [];
-    arrowLengths: number[] = [];
+    sensorData: { distance: number; origin: THREE.Vector3; direction: THREE.Vector3; }[] = [];
     chaseMode: boolean = true;
     W: boolean = false;
     A: boolean = false;
@@ -77,40 +77,24 @@ export class PlayMode implements Mode {
     }
 
     update(delta: number) {
-        this.car?.getRays().forEach((ray, idx) => {
-            ray.layers.set(BARRIER_RAYCAST_LAYER);
-            const intersects = ray.intersectObjects(
-                this.gameWorld.scene.children
-            );
-            let distance = 1.0;
-            intersects.forEach((sect) => {
-                if (sect.distance < distance) distance = sect.distance;
-            });
+        this.car?.applyInput(this.W, this.A, this.S, this.D, this.SPACE);
+
+        this.sensorData = this.car.getSensorData(this.gameWorld);
+        this.sensorData.forEach((sensorData, idx) => {
             const arrowHelper = this.arrowHelpers[idx];
-            arrowHelper.setLength(distance, 0.05, 0.03);
-            this.arrowLengths[idx] = distance;
-            arrowHelper.setDirection(ray.ray.direction);
-            arrowHelper.position.x = ray.ray.origin.x;
-            arrowHelper.position.y = ray.ray.origin.y;
-            arrowHelper.position.z = ray.ray.origin.z;
+            arrowHelper.setLength(sensorData.distance, 0.05, 0.03);
+            arrowHelper.setDirection(sensorData.direction);
+            arrowHelper.position.copy(sensorData.origin);
             arrowHelper.updateMatrix();
 
             const domElement = document.getElementById("arrow-length-indicator-" + idx)
             if (domElement) {
-                domElement.style.width = (distance * 100) + "%";
-                domElement.innerText = distance.toFixed(2);
+                domElement.style.width = (sensorData.distance * 100) + "%";
+                domElement.innerText = sensorData.distance.toFixed(2);
             }
-
-            this.car?.applyInput(this.W, this.A, this.S, this.D, this.SPACE);
         });
 
-        if (this.car) {
-            let forwardDir = this.car.getForwardDir();
-            forwardDir.y = 0;
-            forwardDir.normalize();
-            let carVel = this.car.bodies[0].velocity;
-            document.getElementById("velocity-element").innerText = forwardDir.dot(new THREE.Vector3(carVel.x, carVel.y, carVel.z)).toFixed(2);
-        }
+        if (this.car) document.getElementById("velocity-element").innerText = this.car.getForwardVelocity().toFixed(2);
 
         if (this.chaseMode && this.car) {
             this.gameWorld.controls.target = this.car.getPosition();
@@ -149,7 +133,7 @@ export class PlayMode implements Mode {
             arrowHelper.dispose();
         });
         this.arrowHelpers = [];
-        this.arrowLengths = [];
+        this.sensorData = [];
     }
 
     /**
@@ -171,7 +155,7 @@ export class PlayMode implements Mode {
         this.car.rotateY(this.gameWorld.raceTrack.startRotation);
         this.gameWorld.addGameObject(this.car);
 
-        this.arrowHelpers = this.car.getRays().map((ray) => {
+        this.arrowHelpers = this.car.getSensorRays().map((ray) => {
             const dir = ray.ray.direction;
             dir.normalize();
             const origin = ray.ray.origin;
@@ -180,9 +164,9 @@ export class PlayMode implements Mode {
             const arrowHelper = new THREE.ArrowHelper(dir, origin, length, hex);
             arrowHelper.visible = this.showSensors;
             this.gameWorld.scene.add(arrowHelper);
-            this.arrowLengths.push(length);
             return arrowHelper;
         });
+        this.sensorData = this.car.getSensorData(this.gameWorld);
     }
 
     activate() {
