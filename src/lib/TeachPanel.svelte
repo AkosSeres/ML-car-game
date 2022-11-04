@@ -47,7 +47,10 @@
                 ><span id="recorded-count-span">{mode.recording.length}</span
                 ></span
             >
-            &nbsp;inputs recorded
+            &nbsp;{mode.state === TeachModeState.Teach ||
+            mode.previousState === TeachModeState.Teach
+                ? "inputs recorded"
+                : "corrections recorded"}
         </div>
     {/if}
 

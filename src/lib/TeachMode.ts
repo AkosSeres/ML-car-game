@@ -18,7 +18,8 @@ export class TeachMode extends PlayMode {
     hiddenLayerSize: number = 10;
     inputSize: number;
     model: tf.Sequential;
-    state: TeachModeState = TeachModeState.None;
+    _state: TeachModeState = TeachModeState.None;
+    previousState: TeachModeState = TeachModeState.None;
     recording: Record[] = [];
     storedRecording: Record[] = [];
 
@@ -146,6 +147,17 @@ export class TeachMode extends PlayMode {
         this.removeCar();
         this.state = TeachModeState.None;
         this.recording = [];
+    }
+
+    get state() {
+        return this._state;
+    }
+
+    set state(newState: TeachModeState) {
+        if (newState !== this._state) {
+            this.previousState = this._state;
+            this._state = newState;
+        }
     }
 
     /**
