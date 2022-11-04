@@ -1,6 +1,7 @@
 import { BasicCar } from "./BasicCar";
 import { PlayMode } from "./PlayMode";
 import * as tf from "@tensorflow/tfjs";
+import { convertTypeAcquisitionFromJson } from "typescript";
 tf.setBackend("cpu"); // can be "cpu" or "webgl" or "wasm"
 
 export enum TeachModeState {
@@ -22,6 +23,10 @@ export class TeachMode extends PlayMode {
     previousState: TeachModeState = TeachModeState.None;
     recording: Record[] = [];
     storedRecording: Record[] = [];
+    isCurrentlyFitting: boolean = false;
+    currentLoss: number = 0;
+    epochsDone: number = 0;
+    numberOfEpochs: number = 40;
 
     constructor(gameWorld) {
         super(gameWorld);
@@ -85,10 +90,20 @@ export class TeachMode extends PlayMode {
         const xDataset = tf.data.array(xArray);
         const yDataset = tf.data.array(yArray);
         const xyDataset = tf.data.zip({ xs: xDataset, ys: yDataset }).batch(32);
-        const history = await this.model.fitDataset(xyDataset, {
-            epochs: 40,
+        this.isCurrentlyFitting = true;
+        await this.model.fitDataset(xyDataset, {
+            epochs: this.numberOfEpochs,
+            callbacks: {
+                onEpochEnd: (epoch, logs) => {
+                    this.currentLoss = logs.loss;
+                    this.epochsDone = epoch + 1;
+                    this.rerenderTeachPanel();
+                }, onTrainEnd: () => {
+                    this.isCurrentlyFitting = false;
+                    this.rerenderTeachPanel();
+                }
+            }
         });
-        console.log(history.history.loss);
     }
 
     update(delta: number) {

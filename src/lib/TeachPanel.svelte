@@ -79,7 +79,7 @@
         </span>
     </div>
 
-    {#if mode.storedRecording.length > 0}
+    {#if mode.storedRecording.length > 0 && !mode.isCurrentlyFitting}
         <button
             on:click={() => {
                 mode.trainFromStored();
@@ -88,6 +88,23 @@
             class="block text-red-700 hover:text-white mx-auto border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-2 py-1 text-center mb-2 dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900"
             >Train from stored inputs</button
         >
+    {/if}
+
+    {#if mode.isCurrentlyFitting}
+        <div class="flex justify-between mb-1">
+            <span class="text-sm font-light text-blue-700 dark:text-white"
+                >Loss: {mode.currentLoss.toFixed(4)}</span
+            >
+            <span class="text-sm font-medium text-blue-700 dark:text-white"
+                >{mode.epochsDone} / {mode.numberOfEpochs} epochs</span
+            >
+        </div>
+        <div class="w-full bg-gray-700 rounded-full h-2.5">
+            <div
+                class="bg-gradient-to-r from-pink-300 via-purple-300 to-indigo-400 h-2.5 rounded-full"
+                style="width: {(mode.epochsDone / mode.numberOfEpochs) * 100}%"
+            />
+        </div>
     {/if}
 
     <hr
