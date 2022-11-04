@@ -110,7 +110,9 @@ export class RaceTrack extends GameObject {
         this.meshes.push(circle);
         const geometryEnd = new THREE.CircleGeometry(this.roadWidth / 2, 16);
         geometryEnd.rotateX(-Math.PI / 2);
-        geometryEnd.translate(roadPoints[roadPoints.length - 1].x, 0.025, roadPoints[roadPoints.length - 1].z);
+        this.finishX = roadPoints[roadPoints.length - 1].x;
+        this.finishZ = roadPoints[roadPoints.length - 1].z;
+        geometryEnd.translate(this.finishX, 0.025, this.finishZ);
         const circleFinish = new THREE.Mesh(geometryEnd, finishMaterial);
         this.meshes.push(circleFinish);
 
@@ -128,6 +130,17 @@ export class RaceTrack extends GameObject {
         this.startRotation = -Math.atan2(-startTangent.z, startTangent.x) + Math.PI / 2;
         this.endX = roadPoints[roadPoints.length - 1].x;
         this.endZ = roadPoints[roadPoints.length - 1].z;
+    }
+
+    /**
+     * Figures out if the given position is in the finish area of the track.
+     * 
+     * @param {number} x The x coordinate of the point.
+     * @param {number} z The z coordinate of the point.
+     * @returns {boolean} Whether the point is inside the finish area of the track.
+     */
+    isFinished(x, z) {
+        return (this.finishX - x) ** 2 + (this.finishZ - z) ** 2 < this.roadWidth ** 2;
     }
 
     /**

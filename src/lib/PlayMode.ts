@@ -79,20 +79,22 @@ export class PlayMode implements Mode {
     update(delta: number) {
         this.car?.applyInput(this.W, this.A, this.S, this.D, this.SPACE);
 
-        this.sensorData = this.car.getSensorData(this.gameWorld);
-        this.sensorData.forEach((sensorData, idx) => {
-            const arrowHelper = this.arrowHelpers[idx];
-            arrowHelper.setLength(sensorData.distance, 0.05, 0.03);
-            arrowHelper.setDirection(sensorData.direction);
-            arrowHelper.position.copy(sensorData.origin);
-            arrowHelper.updateMatrix();
+        if (this.car) {
+            this.sensorData = this.car.getSensorData(this.gameWorld);
+            this.sensorData.forEach((sensorData, idx) => {
+                const arrowHelper = this.arrowHelpers[idx];
+                arrowHelper.setLength(sensorData.distance, 0.05, 0.03);
+                arrowHelper.setDirection(sensorData.direction);
+                arrowHelper.position.copy(sensorData.origin);
+                arrowHelper.updateMatrix();
 
-            const domElement = document.getElementById("arrow-length-indicator-" + idx)
-            if (domElement) {
-                domElement.style.width = (sensorData.distance * 100) + "%";
-                domElement.innerText = sensorData.distance.toFixed(2);
-            }
-        });
+                const domElement = document.getElementById("arrow-length-indicator-" + idx)
+                if (domElement) {
+                    domElement.style.width = (sensorData.distance * 100) + "%";
+                    domElement.innerText = sensorData.distance.toFixed(2);
+                }
+            });
+        }
 
         if (this.car) document.getElementById("velocity-element").innerText = this.car.getForwardVelocity().toFixed(2);
 
