@@ -79,7 +79,7 @@ export class TeachMode extends PlayMode {
     }
 
     storeRecording() {
-        this.storedRecording = [...this.storedRecording, ...this.recording];
+        this.storedRecording.push(...this.recording);
         this.recording = [];
         this.rerenderTeachPanel();
     }
@@ -89,7 +89,7 @@ export class TeachMode extends PlayMode {
         const yArray = this.storedRecording.map(record => record.action);
         const xDataset = tf.data.array(xArray);
         const yDataset = tf.data.array(yArray);
-        const xyDataset = tf.data.zip({ xs: xDataset, ys: yDataset }).batch(32);
+        const xyDataset = tf.data.zip({ xs: xDataset, ys: yDataset }).batch(32).shuffle(32);
         this.isCurrentlyFitting = true;
         await this.model.fitDataset(xyDataset, {
             epochs: this.numberOfEpochs,
