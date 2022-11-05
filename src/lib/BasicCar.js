@@ -208,7 +208,7 @@ export class BasicCar extends GameObject {
     getSensorData(gameWorld) {
         const rays = this.getSensorRays();
         return rays.map(ray => {
-            let intersects = ray.intersectObjects(gameWorld.scene.children);
+            let intersects = ray.intersectObjects([gameWorld.raceTrack.barrierMesh, gameWorld.ground.mesh], false);
             let distance = intersects.length > 0 ? intersects[0].distance / ray.far : 1.0;
             let origin = ray.ray.origin;
             let direction = ray.ray.direction;
