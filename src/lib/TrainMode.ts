@@ -64,10 +64,12 @@ export class TrainMode implements Mode {
         this.population.forEach((element) => {
             const sens = element.car.getSensorData(this.gameWorld);
             const vel = element.car.getForwardVelocity();
-            const input = [[...sens.map(s => s.distance), vel]];
-            const result = element.model.predict(tf.tensor(input)) as tf.Tensor;
+            const input = tf.tensor([[...sens.map(s => s.distance), vel]]);
+            const result = element.model.predict(input) as tf.Tensor;
             const WASDSPACE = result.arraySync()[0].map(d => d >= 0.5);
             element.car.applyInput(...WASDSPACE);
+            input.dispose();
+            result.dispose();
 
             // const carPos = element.car.getPosition();
             // element.fitness = this.gameWorld.raceTrack.amountCompleted(carPos.x, carPos.z);
@@ -81,32 +83,31 @@ export class TrainMode implements Mode {
         });
         this.population.sort((a, b) => b.fitness - a.fitness);
 
-        const crossoverRate = 0.25;
-        for (let i = Math.round(this.population.length / 2); i < this.population.length; i++) {
-            if (Math.random() >= crossoverRate) continue;
-            const parent1 = this.population[Math.floor(Math.random() * this.population.length / 2)];
-            const parent2 = this.population[Math.floor(Math.random() * this.population.length / 2)];
-            const child = this.population[i];
-            for (let wIdx = 0; wIdx < child.model.weights.length; wIdx++) {
-                const w = child.model.weights[wIdx];
-                const w1 = parent1.model.weights[wIdx];
-                const w2 = parent2.model.weights[wIdx];
-                const r = Math.random();
-                const newVals = tf.tidy(() => {
-                    return w1.val.mul(r).add(w2.val.mul(1 - r));
-                });
-                w.val.assign(newVals);
+        tf.tidy(() => {
+            const crossoverRate = 0.25;
+            for (let i = Math.round(this.population.length / 2); i < this.population.length; i++) {
+                if (Math.random() >= crossoverRate) continue;
+                const parent1 = this.population[Math.floor(Math.random() * this.population.length / 2)];
+                const parent2 = this.population[Math.floor(Math.random() * this.population.length / 2)];
+                const child = this.population[i];
+                for (let wIdx = 0; wIdx < child.model.weights.length; wIdx++) {
+                    const w = child.model.weights[wIdx];
+                    const w1 = parent1.model.weights[wIdx];
+                    const w2 = parent2.model.weights[wIdx];
+                    const r = Math.random();
+                    w.val.assign(w1.val.mul(r).add(w2.val.mul(1 - r)));
+                }
             }
-        }
 
-        const mutationRate = 0.05;
-        for (let i = 0; i < this.population.length; i++) {
-            if (Math.random() >= mutationRate) continue;
-            this.population[i].model.weights.forEach(w => {
-                const diff = tf.randomNormal(w.shape, 0, 0.01);
-                w.val.assign(w.val.add(diff));
-            });
-        }
+            const mutationRate = 0.05;
+            for (let i = 0; i < this.population.length; i++) {
+                if (Math.random() >= mutationRate) continue;
+                this.population[i].model.weights.forEach(w => {
+                    const diff = tf.randomNormal(w.shape, 0, 0.01);
+                    w.val.assign(w.val.add(diff));
+                });
+            }
+        });
     }
 
     activate() {

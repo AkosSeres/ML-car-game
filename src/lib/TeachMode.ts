@@ -1,7 +1,7 @@
 import { BasicCar } from "./BasicCar";
 import { PlayMode } from "./PlayMode";
 import * as tf from "@tensorflow/tfjs";
-import { convertTypeAcquisitionFromJson } from "typescript";
+import { textChangeRangeIsUnchanged } from "typescript";
 tf.setBackend("cpu"); // can be "cpu" or "webgl" or "wasm"
 
 export enum TeachModeState {
@@ -37,6 +37,7 @@ export class TeachMode extends PlayMode {
     }
 
     generateNetwork() {
+        if (this.model) this.model.dispose();
         this.model = tf.sequential({
             layers: [
                 tf.layers.dense({ inputShape: [this.inputSize], units: this.hiddenLayerSize, activation: 'tanh' }),
@@ -129,11 +130,13 @@ export class TeachMode extends PlayMode {
         }
 
         if (this.state === TeachModeState.Demonstrate && this.car) {
-            const input = [[...this.sensorData.map(datum => datum.distance), this.car.getForwardVelocity()]];
-            const result = this.model.predict(tf.tensor(input)) as tf.Tensor;
+            const input = tf.tensor([[...this.sensorData.map(datum => datum.distance), this.car.getForwardVelocity()]]);
+            const result = this.model.predict(input) as tf.Tensor;
             const WASDSPACE = result.arraySync()[0].map(d => d >= 0.5);
             // @ts-ignore
             this.car.applyInput(...WASDSPACE);
+            input.dispose();
+            result.dispose();
             if (this.W || this.A || this.S || this.D || this.SPACE) {
                 this.car.applyInput(this.W, this.A, this.S, this.D, this.SPACE);
                 this.recording.push({
