@@ -195,6 +195,7 @@ export class BasicCar extends GameObject {
             let from = middlePos.clone().add(sideDir.clone().multiplyScalar(0.05 * Math.sin(angle)));
             let ray = new THREE.Raycaster(from, dir, 0.01, 1.0);
             ray.layers.set(BARRIER_RAYCAST_LAYER);
+            ray.firstHitOnly = true;
             return ray;
         });
     }

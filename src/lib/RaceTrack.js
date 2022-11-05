@@ -3,6 +3,11 @@ import * as CANNON from "cannon-es";
 import Offset from "polygon-offset";
 import { GameObject } from "./GameObject";
 import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils';
+import { computeBoundsTree, disposeBoundsTree, acceleratedRaycast } from 'three-mesh-bvh';
+
+THREE.BufferGeometry.prototype.computeBoundsTree = computeBoundsTree;
+THREE.BufferGeometry.prototype.disposeBoundsTree = disposeBoundsTree;
+THREE.Mesh.prototype.raycast = acceleratedRaycast;
 
 export const BARRIER_RAYCAST_LAYER = 4;
 export const BARRIER_COLLISION_FILTER_GROUP = 16;
@@ -86,6 +91,7 @@ export class RaceTrack extends GameObject {
                 extrudePath: barrierCurve,
             }));
         const barrierGeometry = BufferGeometryUtils.mergeBufferGeometries(barrierGeoms, false);
+        barrierGeometry.computeBoundsTree(); // We need to dispose this later
         const barrierMesh = new THREE.Mesh(barrierGeometry, barrierMaterial);
         this.barrierMesh = barrierMesh;
         barrierMesh.castShadow = false;
