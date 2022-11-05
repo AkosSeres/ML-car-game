@@ -104,7 +104,7 @@
         <div class="w-full bg-gray-700 rounded-full h-2.5">
             <div
                 class="bg-gradient-to-r from-pink-300 via-purple-300 to-indigo-400 h-2.5 rounded-full"
-                style="width: {(mode.epochsDone / mode.numberOfEpochs) * 100}%"
+                style="width: {(mode.epochsDone / mode.numberOfEpochs) * 100}%;"
             />
         </div>
     {/if}
