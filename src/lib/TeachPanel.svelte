@@ -1,6 +1,8 @@
 <script lang="ts">
     import { TeachMode, TeachModeState } from "./TeachMode";
     import EnvironmentSetter from "./EnvironmentSetter.svelte";
+    import CarDataDisplay from "./CarDataDisplay.svelte";
+    import PlayModeSettings from "./PlayModeSettings.svelte";
 
     export let mode: TeachMode;
 
@@ -85,7 +87,7 @@
                 mode.trainFromStored();
             }}
             type="button"
-            class="block text-red-700 hover:text-white mx-auto border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-2 py-1 text-center mb-2 dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900"
+            class="block text-red-700 hover:text-white mx-auto border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-2 py-1 text-center mb-0 dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900"
             >Train from stored inputs</button
         >
     {/if}
@@ -107,78 +109,60 @@
         </div>
     {/if}
 
-    <hr
-        class="my-4 mx-auto w-48 h-1 bg-gray-100 rounded border-0 dark:bg-gray-700"
-    />
-
-    <label
-        for="chase-mode-toggle"
-        class="inline-flex relative items-center cursor-pointer mb-4"
+    <ul
+        class="w-100 mt-4 grid grid-cols-3 flex-row flex-wrap text-sm font-bold rounded-xl border border-gray-600"
     >
-        <input
-            type="checkbox"
-            value=""
-            bind:checked={mode.chaseMode}
-            id="chase-mode-toggle"
-            class="sr-only peer"
-        />
-        <div
-            class="w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all dark:border-gray-600 peer-checked:bg-gradient-to-r from-pink-300 via-purple-300 to-indigo-400"
-        />
-        <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300"
-            >Chase camera</span
+        <li
+            class="col-span-2 py-2 px-2 rounded-tl-xl border-b border-gray-600 text-gray-900 bg-gradient-to-r from-pink-300 via-purple-300 to-indigo-400"
         >
-    </label><br />
-
-    <label
-        for="show-sensors-toggle"
-        class="inline-flex relative items-center cursor-pointer"
-    >
+            Epochs
+        </li>
         <input
-            type="checkbox"
-            value=""
-            bind:checked={mode.showSensors}
-            id="show-sensors-toggle"
-            class="sr-only peer"
+            type="number"
+            min="1"
+            max="1000000"
+            step="1"
+            pattern="\d+"
+            bind:value={mode.numberOfEpochs}
+            class="col-span-1 p-1 text-gray-900 bg-gray-50 rounded-tr-xl border border-gradient-to-r from-pink-300 via-purple-300 to-indigo-400 sm:text-xs focus:ring-gray-500 focus:border-gray-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-900 dark:focus:bg-gray-900"
         />
-        <div
-            class="w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all dark:border-gray-600 peer-checked:bg-gradient-to-r from-pink-300 via-purple-300 to-indigo-400"
-        />
-        <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300"
-            >Visualize sensors</span
+        <li
+            class="col-span-2 py-2 px-2 border-b border-gray-600 text-gray-900 bg-gradient-to-r from-pink-300 via-purple-300 to-indigo-400"
         >
-    </label>
+            Batch size
+        </li>
+        <input
+            type="number"
+            min="1"
+            max="256"
+            step="1"
+            pattern="\d+"
+            bind:value={mode.batchSize}
+            class="col-span-1 p-1 text-gray-900 bg-gray-50 border border-gradient-to-r from-pink-300 via-purple-300 to-indigo-400 sm:text-xs focus:ring-gray-500 focus:border-gray-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-900 dark:focus:bg-gray-900"
+        />
+        <li
+            class="col-span-2 py-2 px-2 rounded-bl-xl border-b border-gray-600 text-gray-900 bg-gradient-to-r from-pink-300 via-purple-300 to-indigo-400"
+        >
+            Hidden layer units
+        </li>
+        <input
+            type="number"
+            min="1"
+            max="1024"
+            step="1"
+            pattern="\d+"
+            bind:value={mode.hiddenLayerSize}
+            class="col-span-1 p-1 text-gray-900 bg-gray-50 rounded-br-xl border border-gradient-to-r from-pink-300 via-purple-300 to-indigo-400 sm:text-xs focus:ring-gray-500 focus:border-gray-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-900 dark:focus:bg-gray-900"
+        />
+    </ul>
 
     <hr
         class="my-4 mx-auto w-48 h-1 bg-gray-100 rounded border-0 dark:bg-gray-700"
     />
 
-    <div class="flex justify-between mb-1">
-        <span class="text-base font-medium text-blue-700 dark:text-white"
-            >Sensors</span
-        >
-    </div>
-    {#each mode.sensorData as sensorDatum, idx}
-        <div class="w-full bg-gray-200 rounded-full dark:bg-gray-700">
-            <div
-                id={"arrow-length-indicator-" + idx}
-                class="bg-blue-600 mb-px bg-gradient-to-r from-pink-300 via-purple-300 to-indigo-400 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full"
-                style="width: {sensorDatum.distance * 100}%"
-            >
-                {sensorDatum.distance.toFixed(2)}
-            </div>
-        </div>
-    {/each}
+    <PlayModeSettings {mode} />
 
-    <div class="flex justify-between mt-4 mb-1">
-        <span class="text-base font-medium text-blue-700 dark:text-white"
-            >Velocity: <span id="velocity-element" /></span
-        >
-    </div>
-
-    <hr
-        class="my-4 mx-auto w-48 h-1 bg-gray-100 rounded border-0 dark:bg-gray-700"
-    />
+    <CarDataDisplay {mode} />
 
     <EnvironmentSetter gameWorld={mode.gameWorld} />
 {/key}

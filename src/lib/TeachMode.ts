@@ -16,7 +16,6 @@ const CarType = BasicCar;
 const outputSize = 5; // The number of outputs the network
 
 export class TeachMode extends PlayMode {
-    hiddenLayerSize: number = 10;
     inputSize: number;
     model: tf.Sequential;
     _state: TeachModeState = TeachModeState.None;
@@ -26,7 +25,9 @@ export class TeachMode extends PlayMode {
     isCurrentlyFitting: boolean = false;
     currentLoss: number = 0;
     epochsDone: number = 0;
-    numberOfEpochs: number = 40;
+    _numberOfEpochs: number = 40;
+    _batchSize: number = 32;
+    _hiddenLayerSize: number = 10;
 
     constructor(gameWorld) {
         super(gameWorld);
@@ -89,7 +90,7 @@ export class TeachMode extends PlayMode {
         const yArray = this.storedRecording.map(record => record.action);
         const xDataset = tf.data.array(xArray);
         const yDataset = tf.data.array(yArray);
-        const xyDataset = tf.data.zip({ xs: xDataset, ys: yDataset }).batch(32).shuffle(32);
+        const xyDataset = tf.data.zip({ xs: xDataset, ys: yDataset }).batch(this.batchSize).shuffle(this.batchSize);
         this.isCurrentlyFitting = true;
         await this.model.fitDataset(xyDataset, {
             epochs: this.numberOfEpochs,
@@ -162,6 +163,34 @@ export class TeachMode extends PlayMode {
         this.removeCar();
         this.state = TeachModeState.None;
         this.recording = [];
+    }
+
+    get numberOfEpochs() {
+        return this._numberOfEpochs;
+    }
+
+    set numberOfEpochs(value: number) {
+        if (value === null || value === undefined || value < 1) return;
+        this._numberOfEpochs = Math.floor(value);
+    }
+
+    get batchSize() {
+        return this._batchSize;
+    }
+
+    set batchSize(value: number) {
+        if (value === null || value === undefined || value < 1) return;
+        this._batchSize = Math.floor(value);
+    }
+
+    get hiddenLayerSize() {
+        return this._hiddenLayerSize;
+    }
+
+    set hiddenLayerSize(value: number) {
+        if (value === null || value === undefined || value < 1) return;
+        this._hiddenLayerSize = Math.floor(value);
+        this.generateNetwork();
     }
 
     get state() {
