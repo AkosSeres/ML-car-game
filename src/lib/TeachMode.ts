@@ -131,7 +131,6 @@ export class TeachMode extends PlayMode {
             const input = [[...this.sensorData.map(datum => datum.distance), this.car.getForwardVelocity()]];
             const result = this.model.predict(tf.tensor(input)) as tf.Tensor;
             const WASDSPACE = result.arraySync()[0].map(d => d >= 0.5);
-            console.log(WASDSPACE);
             this.car.applyInput(...WASDSPACE);
             if (this.W || this.A || this.S || this.D || this.SPACE) {
                 this.car.applyInput(this.W, this.A, this.S, this.D, this.SPACE);
