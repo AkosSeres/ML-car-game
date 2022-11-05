@@ -60,6 +60,11 @@ export class TrainMode implements Mode {
                 loss: 'binaryCrossentropy', // because we can have multiple outputs 1
                 // metrics: ['accuracy'],
             });
+            model.weights.forEach(w => {
+                const newVals = tf.randomNormal(w.shape);
+                // w.val is an instance of tf.Variable
+                w.val.assign(newVals);
+            });
             this.population.push({ car, model, fitness: 0 });
         }
     }
