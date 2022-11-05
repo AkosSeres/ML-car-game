@@ -7,7 +7,7 @@
 {#if gameWorld !== null}
     <label
         for="steps-range"
-        class="block mb-2 text-sm font-medium text-gray-300"
+        class="block mb-1 text-sm font-medium text-gray-300"
         >Ground friction: <b>{gameWorld.ground.body.material.friction}</b
         ></label
     >
@@ -23,7 +23,7 @@
 
     <label
         for="steps-range"
-        class="block my-2 text-sm font-medium text-gray-300"
+        class="block my-1 text-sm font-medium text-gray-300"
         >Barrier friction: <b
             >{gameWorld.raceTrack.barrrierBody.material.friction}</b
         ></label

@@ -4,7 +4,7 @@
     export let mode: DrawMode;
 </script>
 
-<label for="steps-range" class="block mb-2 text-sm font-medium text-gray-300"
+<label for="steps-range" class="block mb-1 text-sm font-medium text-gray-300"
     >Road width: <b>{mode.brushSize}</b></label
 >
 <input

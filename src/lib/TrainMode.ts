@@ -27,6 +27,10 @@ export class TrainMode implements Mode {
     population: PopulationElement[] = [];
     hiddenLayerSize: number = 10;
     timeLeft: number = 0;
+    topRatio: number = 0.5;
+    crossoverRate: number = 0.25;
+    mutationRate: number = 0.05;
+    generationCount: number = 1;
 
     constructor(gameWorld) {
         this.gameWorld = gameWorld;
@@ -49,6 +53,7 @@ export class TrainMode implements Mode {
 
     stopTraining() {
         this.isTraining = false;
+        this.timeLeft = this.maxRunTime;
     }
 
     update(delta: number) {
@@ -58,22 +63,23 @@ export class TrainMode implements Mode {
                 this.doRankingAndCrossover();
                 this.timeLeft = this.maxRunTime;
                 this.resetCars();
+                this.generationCount++;
             }
+
+            this.population.forEach((element) => {
+                const sens = element.car.getSensorData(this.gameWorld);
+                const vel = element.car.getForwardVelocity();
+                const input = tf.tensor([[...sens.map(s => s.distance), vel]]);
+                const result = element.model.predict(input) as tf.Tensor;
+                const WASDSPACE = result.arraySync()[0].map(d => d >= 0.5);
+                element.car.applyInput(...WASDSPACE);
+                input.dispose();
+                result.dispose();
+
+                const carPos = element.car.getPosition();
+                element.fitness = this.gameWorld.raceTrack.amountCompleted(carPos.x, carPos.z);
+            });
         }
-
-        this.population.forEach((element) => {
-            const sens = element.car.getSensorData(this.gameWorld);
-            const vel = element.car.getForwardVelocity();
-            const input = tf.tensor([[...sens.map(s => s.distance), vel]]);
-            const result = element.model.predict(input) as tf.Tensor;
-            const WASDSPACE = result.arraySync()[0].map(d => d >= 0.5);
-            element.car.applyInput(...WASDSPACE);
-            input.dispose();
-            result.dispose();
-
-            // const carPos = element.car.getPosition();
-            // element.fitness = this.gameWorld.raceTrack.amountCompleted(carPos.x, carPos.z);
-        });
     }
 
     doRankingAndCrossover() {
@@ -84,24 +90,23 @@ export class TrainMode implements Mode {
         this.population.sort((a, b) => b.fitness - a.fitness);
 
         tf.tidy(() => {
-            const crossoverRate = 0.25;
-            for (let i = Math.round(this.population.length / 2); i < this.population.length; i++) {
-                if (Math.random() >= crossoverRate) continue;
-                const parent1 = this.population[Math.floor(Math.random() * this.population.length / 2)];
-                const parent2 = this.population[Math.floor(Math.random() * this.population.length / 2)];
+            // Perform crossover
+            for (let i = Math.round(this.population.length * this.topRatio); i < this.population.length; i++) {
+                if (Math.random() >= this.crossoverRate) continue;
+                const parent1 = this.population[Math.floor(Math.random() * this.population.length * this.topRatio)];
+                const parent2 = this.population[Math.floor(Math.random() * this.population.length * this.topRatio)];
                 const child = this.population[i];
+                const r = Math.random();
                 for (let wIdx = 0; wIdx < child.model.weights.length; wIdx++) {
                     const w = child.model.weights[wIdx];
                     const w1 = parent1.model.weights[wIdx];
                     const w2 = parent2.model.weights[wIdx];
-                    const r = Math.random();
                     w.val.assign(w1.val.mul(r).add(w2.val.mul(1 - r)));
                 }
             }
-
-            const mutationRate = 0.05;
+            // Perform mutations
             for (let i = 0; i < this.population.length; i++) {
-                if (Math.random() >= mutationRate) continue;
+                if (Math.random() >= this.mutationRate) continue;
                 this.population[i].model.weights.forEach(w => {
                     const diff = tf.randomNormal(w.shape, 0, 0.01);
                     w.val.assign(w.val.add(diff));
@@ -134,6 +139,7 @@ export class TrainMode implements Mode {
             car.rotateY(this.gameWorld.raceTrack.startRotation);
             this.gameWorld.addGameObject(car);
             element.car = car;
+            element.fitness = 0;
         });
     }
 
