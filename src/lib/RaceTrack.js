@@ -1,7 +1,8 @@
 import * as THREE from "three";
 import * as CANNON from "cannon-es";
 import Offset from "polygon-offset";
-import { BoxObject, GameObject } from "./GameObject";
+import { GameObject } from "./GameObject";
+import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils';
 
 export const BARRIER_RAYCAST_LAYER = 4;
 export const BARRIER_COLLISION_FILTER_GROUP = 16;
@@ -35,9 +36,10 @@ export class RaceTrack extends GameObject {
         this.roadLength = this.roadSpline.getLength();
 
         let offset = new Offset();
-        let barrierMaterial = new THREE.MeshLambertMaterial({
+        let barrierMaterial = new THREE.MeshPhongMaterial({
             color: 0xffea00,
             wireframe: false,
+            side: THREE.DoubleSide,
         });
         const barrierBody = new CANNON.Body({
             mass: 0,
@@ -50,34 +52,46 @@ export class RaceTrack extends GameObject {
         this.pointsIn2D = points.map(p => new THREE.Vector2(p.x, p.z));
         const polyLine = offset.data(points.map((p) => [p.x, p.z])).arcSegments(20).offsetLine(roadWidth / 2).map(pl => pl.map((p) => new THREE.Vector3(p[0], 0, p[1])));
 
-        const mshape = new THREE.Shape(polyLine[0].map(p => new THREE.Vector2(p.x, p.z)));
+        const barrierCurves = polyLine.map(pl => new THREE.CatmullRomCurve3(pl, true, "catmullrom", 0.05));
+        const mshape = new THREE.Shape(barrierCurves[0].getSpacedPoints(Math.floor(barrierCurves[0].getLength() / resolution)).map(p => new THREE.Vector2(p.x, p.z)));
 
         for (let ii = 0; ii < polyLine.length; ii++) {
-            const line = polyLine[ii];
-            if (ii > 0) mshape.holes.push(new THREE.Path(line.map(p => new THREE.Vector2(p.x, p.z))));
-            for (let i = 1; i < line.length; i++) {
-                let t = line[i].clone().sub(line[i - 1]);
-                let p = line[i]
+            const line = barrierCurves[ii];
+            const linePoints = line.getSpacedPoints(Math.floor(line.getLength() / resolution));
+            if (ii > 0) mshape.holes.push(new THREE.Path(linePoints.map(p => new THREE.Vector2(p.x, p.z))));
+            for (let i = 1; i < linePoints.length; i++) {
+                let t = linePoints[i].clone().sub(linePoints[i - 1]);
+                let p = linePoints[i]
                     .clone()
-                    .add(line[i - 1])
+                    .add(linePoints[i - 1])
                     .divideScalar(2);
-                let barrier = new BoxObject(
-                    p.x,
-                    p.y + 0.1,
-                    p.z,
-                    t.length(),
-                    0.2,
-                    0.01,
-                    barrierMaterial,
-                    0
+                barrierBody.addShape(new CANNON.Box(
+                    new CANNON.Vec3(t.length() / 2, 0.2 / 2, 0.01 / 2)),
+                    new CANNON.Vec3(p.x, p.y + 0.1, p.z),
+                    new CANNON.Quaternion().setFromAxisAngle(new CANNON.Vec3(0, 1, 0), Math.atan2(-t.z, t.x))
                 );
-                barrier.rotateY(Math.atan2(-t.z, t.x));
-                barrier.meshes[0].layers.enable(BARRIER_RAYCAST_LAYER);
-                barrier.meshes[0].receiveShadow = false;
-                barrierBody.addShape(barrier.bodies[0].shapes[0], barrier.bodies[0].position, barrier.bodies[0].quaternion);
-                this.meshes.push(barrier.meshes[0]);
             }
         }
+
+        const barrierShape = new THREE.Shape([
+            new THREE.Vector2(0.2, 0.005),
+            new THREE.Vector2(-0.2, 0.005),
+            new THREE.Vector2(-0.2, -0.005),
+            new THREE.Vector2(0.2, -0.005),
+            new THREE.Vector2(0.2, 0.005),
+        ]);
+        const barrierGeoms = barrierCurves.map((barrierCurve) =>
+            new THREE.ExtrudeGeometry(barrierShape, {
+                steps: Math.floor(barrierCurve.getLength() / resolution),
+                extrudePath: barrierCurve,
+            }));
+        const barrierGeometry = BufferGeometryUtils.mergeBufferGeometries(barrierGeoms, false);
+        const barrierMesh = new THREE.Mesh(barrierGeometry, barrierMaterial);
+        this.barrierMesh = barrierMesh;
+        barrierMesh.castShadow = false;
+        barrierMesh.receiveShadow = false;
+        barrierMesh.layers.enable(BARRIER_RAYCAST_LAYER);
+        this.meshes.push(barrierMesh);
 
         let roadGeom = new THREE.ShapeGeometry(mshape);
         let road = new THREE.Mesh(roadGeom, roadMaterial);
