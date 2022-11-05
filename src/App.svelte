@@ -5,6 +5,10 @@
 
 <main>
   <div id="canvas-pane">
+    <div
+      id="debug-element"
+      class="fixed top-0 left-0 p-2 pointer-events-none"
+    />
     <ThreeCanvas />
   </div>
   <div id="menu-pane" class="overflow-y-scroll">

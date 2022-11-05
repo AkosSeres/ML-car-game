@@ -4,12 +4,15 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import type { GameObject } from "./GameObject";
 import { Ground } from "./Ground";
 import type { RaceTrack } from "./RaceTrack";
+import * as tf from "@tensorflow/tfjs";
 
 /**
  * Class representing a game world. It contains and manages the renderer and the physics engine.
  */
 export class GameWorld {
     canvas: HTMLCanvasElement;
+    debug: boolean = false;
+    timings: { renderStart: number, renderEnd: number, physicsStart: number, physicsEnd: number, uiStart: number, uiEnd: number } = { renderStart: 0, renderEnd: 0, physicsStart: 0, physicsEnd: 0, uiStart: 0, uiEnd: 0 };
     scene: THREE.Scene;
     renderer: THREE.WebGLRenderer;
     gameObjects: GameObject[];
@@ -60,8 +63,11 @@ export class GameWorld {
      * Updates and renders the world.
      */
     update(delta) {
+        this.timings.physicsStart = performance.now();
         this.world.step(delta);
         this.gameObjects.forEach(obj => obj.syncMeshesToBodies());
+        this.timings.physicsEnd = performance.now();
+        this.timings.uiStart = performance.now();
         this.controls.update();
         this.cameraPosition.lerp(this.camera.position, 1 - 0.9 ** (delta / 0.016));
         this.cameraQuaternion.slerp(this.camera.quaternion, 1 - 0.9 ** (delta / 0.016));
@@ -69,7 +75,12 @@ export class GameWorld {
         camera.position.copy(this.cameraPosition);
         camera.quaternion.copy(this.cameraQuaternion);
         this.callback(delta);
+        this.timings.uiEnd = performance.now();
+        this.timings.renderStart = performance.now();
         this.renderer.render(this.scene, camera);
+        this.timings.renderEnd = performance.now();
+        if (this.debug) this.renderDebug(delta);
+        else this.clearDebug();
     }
 
     /**
@@ -199,5 +210,30 @@ export class GameWorld {
     setupControls() {
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
         this.controls.enableDamping = false;
+    }
+
+    /**
+     * Renders the debug panel of the whole app to the canvas.
+     */
+    renderDebug(delta: number) {
+        const tfInfo = tf.memory();
+        document.getElementById("debug-element").innerText =
+            `FPS: ${Math.round(1 / delta)}
+            Delta: ${(delta * 1000).toFixed(2)}ms, ${(this.timings.renderEnd - this.timings.renderStart).toFixed(2)}ms render, ${(this.timings.physicsEnd - this.timings.physicsStart).toFixed(2)}ms physics, ${(this.timings.uiEnd - this.timings.uiStart).toFixed(2)}ms UI
+            Pysics bodies: ${this.world.bodies.length}
+            Physics constraints: ${this.world.constraints.length}
+            Game objects: ${this.gameObjects.length}
+            Three Meshes: ${this.scene.children.length}
+            Three Memory info: ${this.renderer.info.memory.geometries} geometries, ${this.renderer.info.memory.textures} textures
+            Render info: ${this.renderer.info.render.calls} calls, ${this.renderer.info.render.frame} frame, ${this.renderer.info.render.lines} lines, ${this.renderer.info.render.points} points, ${this.renderer.info.render.triangles} triangles
+            Program info: ${this.renderer.info.programs.length} programs
+            Tensorflow: ${tfInfo.numBytes} btyes, ${tfInfo.numDataBuffers} databuffers, ${tfInfo.numTensors} tensors, ${tfInfo.unreliable} unreliable`;
+    }
+
+    /**
+     * Clears the debug panel.
+     */
+    clearDebug() {
+        document.getElementById("debug-element").innerText = "";
     }
 }
