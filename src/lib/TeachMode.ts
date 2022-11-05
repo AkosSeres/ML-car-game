@@ -88,11 +88,10 @@ export class TeachMode extends PlayMode {
     async trainFromStored() {
         const xArray = this.storedRecording.map(record => [...record.sensordDistances, record.forwardVelocity]);
         const yArray = this.storedRecording.map(record => record.action);
-        const xDataset = tf.data.array(xArray);
-        const yDataset = tf.data.array(yArray);
-        const xyDataset = tf.data.zip({ xs: xDataset, ys: yDataset }).batch(this.batchSize).shuffle(this.batchSize);
+        const xDataset = tf.tensor(xArray);
+        const yDataset = tf.tensor(yArray);
         this.isCurrentlyFitting = true;
-        await this.model.fitDataset(xyDataset, {
+        await this.model.fit(xDataset, yDataset, {
             epochs: this.numberOfEpochs,
             callbacks: {
                 onEpochEnd: (epoch, logs) => {
@@ -105,6 +104,8 @@ export class TeachMode extends PlayMode {
                 }
             }
         });
+        xDataset.dispose();
+        yDataset.dispose();
     }
 
     update(delta: number) {
