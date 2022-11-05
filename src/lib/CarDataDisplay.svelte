@@ -7,6 +7,26 @@
 {#if mode.car}
     <div class="flex justify-between mb-1">
         <span class="text-base font-medium text-blue-700 dark:text-white"
+            >Track completed</span
+        >
+        <span
+            id="completion-text"
+            class="text-xs font-medium text-blue-700 dark:text-white"
+            >{(mode.completion * 100).toFixed(1)}%</span
+        >
+    </div>
+    <div
+        class="w-full bg-gray-700 rounded-full h-2.5 mb-3"
+    >
+        <div
+            id="completion-bar"
+            class="bg-gradient-to-r from-[#FF0000] via-[#FF5733] to-[#00FF00] bg-[length:100%] h-2.5 rounded-full"
+            style="width: {mode.completion * 100}%"
+        />
+    </div>
+
+    <div class="flex justify-between mb-1">
+        <span class="text-base font-medium text-blue-700 dark:text-white"
             >Sensors</span
         >
         <span class="text-xs font-medium my-auto text-blue-700 dark:text-white"
@@ -33,3 +53,10 @@
         class="my-4 mx-auto w-48 h-1 bg-gray-100 rounded border-0 dark:bg-gray-700"
     />
 {/if}
+
+<style>
+    #completion-bar {
+        transition: width 0.25s ease;
+        background-size: cover;
+    }
+</style>

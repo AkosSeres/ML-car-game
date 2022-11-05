@@ -23,6 +23,7 @@ export class PlayMode implements Mode {
     D: boolean = false;
     SPACE: boolean = false;
     private _showSensors: boolean = false;
+    completion: number = 0;
 
     constructor(gameWorld) {
         this.gameWorld = gameWorld;
@@ -94,6 +95,11 @@ export class PlayMode implements Mode {
                     domElement.innerText = sensorData.distance.toFixed(2);
                 }
             });
+
+            const carPosition = this.car.getPosition();
+            this.completion = this.gameWorld.raceTrack.amountCompleted(carPosition.x, carPosition.z);
+            document.getElementById("completion-text").innerText = (this.completion * 100).toFixed(1) + "%";
+            document.getElementById("completion-bar").style.width = (this.completion * 100) + "%";
         }
 
         if (this.car) document.getElementById("velocity-element").innerText = this.car.getForwardVelocity().toFixed(2);
@@ -136,6 +142,7 @@ export class PlayMode implements Mode {
         });
         this.arrowHelpers = [];
         this.sensorData = [];
+        this.completion = 0;
     }
 
     /**

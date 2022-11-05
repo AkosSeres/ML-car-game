@@ -46,9 +46,9 @@ export class RaceTrack extends GameObject {
                 restitution: 0.25
             }),
         });
-        const points = this.roadSpline.getSpacedPoints(Math.floor(this.roadLength / resolution)).map((p) => [p.x, p.z]);
-        // const points = roadPoints.map((p) => [p.x, p.z]);
-        const polyLine = offset.data(points).arcSegments(20).offsetLine(roadWidth / 2).map(pl => pl.map((p) => new THREE.Vector3(p[0], 0, p[1])));
+        const points = this.roadSpline.getSpacedPoints(Math.floor(this.roadLength / resolution));
+        this.pointsIn2D = points.map(p => new THREE.Vector2(p.x, p.z));
+        const polyLine = offset.data(points.map((p) => [p.x, p.z])).arcSegments(20).offsetLine(roadWidth / 2).map(pl => pl.map((p) => new THREE.Vector3(p[0], 0, p[1])));
 
         const mshape = new THREE.Shape(polyLine[0].map(p => new THREE.Vector2(p.x, p.z)));
 
@@ -141,6 +141,19 @@ export class RaceTrack extends GameObject {
      */
     isFinished(x, z) {
         return (this.finishX - x) ** 2 + (this.finishZ - z) ** 2 < this.roadWidth ** 2;
+    }
+
+    /**
+     * Figures out how much of the track has been completed at the given point.
+     * 
+     * @param {number} x The x coordinate of the query point.
+     * @param {number} z The z coordinate of the query point.
+     * @returns The percentage of the track that the point has completed. Range is [0, 1].
+     */
+    amountCompleted(x, z) {
+        const point = new THREE.Vector2(x, z);
+        const distancesSq = this.pointsIn2D.map(p => p.distanceToSquared(point));
+        return distancesSq.indexOf(Math.min(...distancesSq)) / (this.pointsIn2D.length - 1);
     }
 
     /**
