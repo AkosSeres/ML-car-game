@@ -191,6 +191,7 @@ export class RaceTrack extends GameObject {
      * Frees up memory used by the track.
      */
     dispose() {
+        this.barrierMesh.geometry.disposeBoundsTree();
         this.barrierMesh.geometry.dispose();
         this.roadMesh.geometry.dispose();
     }
