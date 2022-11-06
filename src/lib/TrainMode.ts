@@ -62,6 +62,19 @@ export class TrainMode implements Mode {
         this.resetCars();
     }
 
+    resetPopulation() {
+        this.stopTraining();
+        this.removeCars();
+        this.population.forEach((element) => {
+            element.car.dispose();
+            element.model.dispose();
+        });
+        this.population = [];
+        this.generationCount = 1;
+        this.generatePopulation();
+        this.rerenderTrainPanel();
+    }
+
     update(delta: number) {
         if (this.isTraining) {
             this.timeLeft -= delta;
@@ -186,10 +199,9 @@ export class TrainMode implements Mode {
             // metrics: ['accuracy'],
         });
         model.weights.forEach(w => {
-            // if (!w.name.includes("bias")) return;
             const newVals = tf.randomNormal(w.shape);
-            // w.val is an instance of tf.Variable
             w.val.assign(newVals);
+            newVals.dispose();
         });
         return { car, model, fitness: 0 };
     }

@@ -132,3 +132,46 @@
     bind:value={mode.mutationStrength}
     class="w-full h-2 bg-gradient-to-r from-pink-300 via-purple-300 to-indigo-400 rounded-lg appearance-none cursor-pointer range-lg"
 />
+
+<label
+    for="population-size-range"
+    class="block mb-1 mt-3 text-sm font-medium text-gray-300"
+>
+    Population size: <b>{mode.populationSize}</b>
+    <span
+        class="inline-flex my-auto my-auto justify-center items-center ml-2 w-[1.25em] h-[1.25em] font-bold text-black bg-orange-300 rounded-full"
+    >
+        !
+    </span>
+    <Tooltip placement="left"
+        ><div class="max-w-sm text-justify">
+            Decrease the population size if you're experiencing lag. This will
+            only take effect after you reset the population with the button down
+            below.
+        </div></Tooltip
+    >
+</label>
+<input
+    id="population-size-range"
+    type="range"
+    min="10"
+    max="200"
+    step="10"
+    bind:value={mode.populationSize}
+    class="w-full h-2 bg-gradient-to-r from-pink-300 via-purple-300 to-indigo-400 rounded-lg appearance-none cursor-pointer range-lg"
+/>
+
+<div class="block mt-5 mx-auto text-center">
+    <button
+        on:click={() => {
+            mode.resetPopulation();
+        }}
+        class="inline-flex items-center justify-center p-0.5 overflow-hidden font-bold text-gray-900 rounded-lg group bg-gradient-to-r from-pink-300 via-purple-300 to-indigo-400 group-hover:from-red-200 group-hover:via-red-300 group-hover:to-yellow-200 dark:text-white dark:hover:text-gray-900 focus:ring-4 focus:outline-none focus:ring-red-100 dark:focus:ring-red-400"
+    >
+        <span
+            class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0"
+        >
+            Reset population
+        </span>
+    </button>
+</div>
