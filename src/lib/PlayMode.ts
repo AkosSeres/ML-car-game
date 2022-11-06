@@ -132,7 +132,10 @@ export class PlayMode implements Mode {
      * Removes the car from the scene if it exists.
      */
     removeCar() {
-        if (this.car) this.gameWorld.removeGameObject(this.car);
+        if (this.car) {
+            this.gameWorld.removeGameObject(this.car);
+            this.car.dispose();
+        }
         delete this.car;
 
         this.arrowHelpers.forEach((arrowHelper) => {

@@ -129,12 +129,13 @@ export class TrainMode implements Mode {
     }
 
     deactivate() {
-        // TODO
+        this.stopTraining();
     }
 
     resetCars() {
         this.population.forEach((element) => {
             this.gameWorld.removeGameObject(element.car);
+            element.car.dispose();
             const car = new BasicCar(
                 this.gameWorld.raceTrack.startX,
                 0.4,

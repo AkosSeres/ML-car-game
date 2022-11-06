@@ -335,4 +335,11 @@ export class BasicCar extends GameObject {
             this.constraintRB.setMotorMaxForce(this.accelMotorForce);
         }
     }
+
+    /**
+     * Frees up the memory allocated by the car.
+     */
+    dispose() {
+        this.meshes.forEach(mesh => mesh.geometry.dispose());
+    }
 }
