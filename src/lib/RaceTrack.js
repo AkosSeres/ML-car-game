@@ -161,17 +161,36 @@ export class RaceTrack extends GameObject {
     }
 
     /**
+     * Returns the index of the closest point on the track to the given position.
+     * 
+     * @param {number} x The x coordinate of the query point.
+     * @param {number} z The z coordinate of the query point. 
+     * @returns {number} The index of the point that is closest to the query point.
+     */
+    closestPointIdx(x, z) {
+        const point = new THREE.Vector2(x, z);
+        const distancesSq = this.pointsIn2D.map(p => p.distanceToSquared(point));
+        return distancesSq.indexOf(Math.min(...distancesSq));
+    }
+
+    closestPointTangentAndCompleted(x, z) {
+        const idx = this.closestPointIdx(x, z);
+        const t = this.roadSpline.getTangentAt(idx / (this.pointsIn2D.length - 1));
+        const completed = idx / (this.pointsIn2D.length - 1);
+        return { tangent: t, completed };
+    }
+
+    /**
      * Figures out how much of the track has been completed at the given point.
      * 
      * @param {number} x The x coordinate of the query point.
      * @param {number} z The z coordinate of the query point.
-     * @returns The percentage of the track that the point has completed. Range is [0, 1].
+     * @returns {number} The percentage of the track that the point has completed. Range is [0, 1].
      */
     amountCompleted(x, z) {
-        const point = new THREE.Vector2(x, z);
-        const distancesSq = this.pointsIn2D.map(p => p.distanceToSquared(point));
-        return distancesSq.indexOf(Math.min(...distancesSq)) / (this.pointsIn2D.length - 1);
+        return this.closestPointIdx(x, z) / (this.pointsIn2D.length - 1);
     }
+
 
     /**
      * Returns the friction value of the barriers.
