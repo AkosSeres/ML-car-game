@@ -7,7 +7,7 @@
   <div id="canvas-pane">
     <div
       id="debug-element"
-      class="fixed top-0 left-0 p-2 pointer-events-none"
+      class="fixed top-0 left-0 p-2 pointer-events-none font-mono"
     />
     <ThreeCanvas />
   </div>

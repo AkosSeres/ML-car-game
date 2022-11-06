@@ -9,6 +9,13 @@
     onMount(() => {
         gameWorld = new GameWorld(canvas);
         gameWorldStore.set(gameWorld);
+
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "d" && (e.ctrlKey || e.metaKey)) {
+                gameWorld.debug = !gameWorld.debug;
+                e.preventDefault();
+            }
+        });
     });
 </script>
 
