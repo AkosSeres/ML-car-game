@@ -46,7 +46,7 @@ export class GameWorld {
         let clock = new THREE.Clock();
 
         const animation = () => {
-            const delta = Math.min(clock.getDelta(), 0.1);
+            const delta = Math.min(clock.getDelta(), 1 / 30);
             if (delta > 0) {
                 this.update(delta);
             }
