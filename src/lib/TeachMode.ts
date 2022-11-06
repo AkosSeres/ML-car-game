@@ -1,7 +1,6 @@
 import { BasicCar } from "./BasicCar";
 import { PlayMode } from "./PlayMode";
 import * as tf from "@tensorflow/tfjs";
-import { textChangeRangeIsUnchanged } from "typescript";
 tf.setBackend("cpu"); // can be "cpu" or "webgl" or "wasm"
 
 export enum TeachModeState {

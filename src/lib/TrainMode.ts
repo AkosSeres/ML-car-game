@@ -24,6 +24,7 @@ export class TrainMode implements Mode {
     isTraining: boolean = false;
     populationSize: number = 50;
     maxRunTime: number = 20; // The maximum time a generation can run for in seconds.
+    lastMaxRunTime: number = 20;
     population: PopulationElement[] = [];
     hiddenLayerSize: number = 10;
     timeLeft: number = 0;
@@ -49,11 +50,14 @@ export class TrainMode implements Mode {
         this.isTraining = true;
         if (this.population.length === 0) this.generatePopulation();
         this.timeLeft = this.maxRunTime;
+        this.lastMaxRunTime = this.timeLeft;
     }
 
     stopTraining() {
         this.isTraining = false;
         this.timeLeft = this.maxRunTime;
+        this.lastMaxRunTime = this.timeLeft;
+        this.resetCars();
     }
 
     update(delta: number) {
@@ -62,8 +66,10 @@ export class TrainMode implements Mode {
             if (this.timeLeft <= 0) {
                 this.doRankingAndCrossover();
                 this.timeLeft = this.maxRunTime;
+                this.lastMaxRunTime = this.timeLeft;
                 this.resetCars();
                 this.generationCount++;
+                this.rerenderTrainPanel();
             }
 
             this.population.forEach((element) => {
@@ -79,6 +85,8 @@ export class TrainMode implements Mode {
                 const carPos = element.car.getPosition();
                 element.fitness = this.gameWorld.raceTrack.amountCompleted(carPos.x, carPos.z);
             });
+
+            document.getElementById("generation-progress-bar").style.width = `${(this.timeLeft / this.lastMaxRunTime) * 100}%`;
         }
     }
 
@@ -174,5 +182,13 @@ export class TrainMode implements Mode {
             w.val.assign(newVals);
         });
         return { car, model, fitness: 0 };
+    }
+
+    /**
+     * Indicates for the UI to rererender.
+     */
+    rerenderTrainPanel() {
+        // @ts-ignore
+        window.rerenderTrainPanel();
     }
 }
