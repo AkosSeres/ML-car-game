@@ -14,10 +14,17 @@ export const BARRIER_COLLISION_FILTER_GROUP = 16;
 
 const roadLineLen = 0.19;
 const lineGeomerty = new THREE.BoxGeometry(0.04, 0.04, roadLineLen);
+const circleGeometry = new THREE.CircleGeometry(0.5, 32);
+circleGeometry.rotateX(-Math.PI / 2);
 const lineMaterial = new THREE.MeshPhongMaterial({ color: 0xffffff });
 const roadMaterial = new THREE.MeshLambertMaterial({
     color: 0x515151,
     wireframe: false,
+});
+const barrierMaterial = new THREE.MeshPhongMaterial({
+    color: 0xffea00,
+    wireframe: false,
+    side: THREE.DoubleSide,
 });
 const startMaterial = new THREE.MeshPhongMaterial({ color: 0xffa500 });
 const finishMaterial = new THREE.MeshPhongMaterial({ color: 0x00ff00 });
@@ -41,11 +48,6 @@ export class RaceTrack extends GameObject {
         this.roadLength = this.roadSpline.getLength();
 
         let offset = new Offset();
-        let barrierMaterial = new THREE.MeshPhongMaterial({
-            color: 0xffea00,
-            wireframe: false,
-            side: THREE.DoubleSide,
-        });
         const barrierBody = new CANNON.Body({
             mass: 0,
             material: new CANNON.Material({
@@ -101,6 +103,7 @@ export class RaceTrack extends GameObject {
 
         let roadGeom = new THREE.ShapeGeometry(mshape);
         let road = new THREE.Mesh(roadGeom, roadMaterial);
+        this.roadMesh = road;
         road.rotateX(Math.PI / 2);
         road.scale.setZ(-1);
         road.translateZ(-0.01);
@@ -123,17 +126,15 @@ export class RaceTrack extends GameObject {
             this.meshes.push(lineMesh);
         }
 
-        const geometry = new THREE.CircleGeometry(this.roadWidth / 2, 16);
-        geometry.rotateX(-Math.PI / 2);
-        geometry.translate(roadPoints[0].x, 0.025, roadPoints[0].z);
-        const circle = new THREE.Mesh(geometry, startMaterial);
+        const circle = new THREE.Mesh(circleGeometry, startMaterial);
+        circle.scale.set(roadWidth, 1, roadWidth);
+        circle.position.set(roadPoints[0].x, 0.025, roadPoints[0].z);
         this.meshes.push(circle);
-        const geometryEnd = new THREE.CircleGeometry(this.roadWidth / 2, 16);
-        geometryEnd.rotateX(-Math.PI / 2);
         this.finishX = roadPoints[roadPoints.length - 1].x;
         this.finishZ = roadPoints[roadPoints.length - 1].z;
-        geometryEnd.translate(this.finishX, 0.025, this.finishZ);
-        const circleFinish = new THREE.Mesh(geometryEnd, finishMaterial);
+        const circleFinish = new THREE.Mesh(circleGeometry, finishMaterial);
+        circleFinish.scale.set(roadWidth, 1, roadWidth);
+        circleFinish.position.set(this.finishX, 0.025, this.finishZ);
         this.meshes.push(circleFinish);
 
         barrierBody.collisionFilterGroup =
@@ -174,6 +175,14 @@ export class RaceTrack extends GameObject {
         const point = new THREE.Vector2(x, z);
         const distancesSq = this.pointsIn2D.map(p => p.distanceToSquared(point));
         return distancesSq.indexOf(Math.min(...distancesSq)) / (this.pointsIn2D.length - 1);
+    }
+
+    /**
+     * Frees up memory used by the track.
+     */
+    dispose() {
+        this.barrierMesh.geometry.dispose();
+        this.roadMesh.geometry.dispose();
     }
 
     /**

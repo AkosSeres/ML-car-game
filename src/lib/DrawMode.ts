@@ -108,6 +108,7 @@ export class DrawMode implements Mode {
 
         if (this.rings.length > 3) {
             this.gameWorld.removeGameObject(this.road);
+            this.road.dispose();
             this.roadPoints = this.rings.map(r => r.position);
             this.road = new RaceTrack(this.roadPoints, this.brushSize);
             this.gameWorld.addGameObject(this.road);
