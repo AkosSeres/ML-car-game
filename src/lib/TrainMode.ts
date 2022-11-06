@@ -8,6 +8,7 @@ interface PopulationElement {
     car: BasicCar;
     model: tf.Sequential;
     fitness: number;
+    finished: boolean;
 }
 
 const carBodyMaterial = new THREE.MeshNormalMaterial();
@@ -88,6 +89,7 @@ export class TrainMode implements Mode {
             }
 
             this.population.forEach((element) => {
+                if (element.finished) return;
                 const sens = element.car.getSensorData(this.gameWorld);
                 const vel = element.car.getForwardVelocity();
                 const input = tf.tensor([[...sens.map(s => s.distance), vel]]);
@@ -99,6 +101,10 @@ export class TrainMode implements Mode {
 
                 const carPos = element.car.getPosition();
                 element.fitness = this.gameWorld.raceTrack.amountCompleted(carPos.x, carPos.z);
+                if (this.gameWorld.raceTrack.isFinished(carPos.x, carPos.z)) {
+                    element.finished = true;
+                    element.fitness = 1.0 + this.timeLeft;
+                }
             });
 
             document.getElementById("generation-progress-bar").style.width = `${(this.timeLeft / this.lastMaxRunTime) * 100}%`;
@@ -171,6 +177,7 @@ export class TrainMode implements Mode {
             this.gameWorld.addGameObject(car);
             element.car = car;
             element.fitness = 0;
+            element.finished = false;
         });
     }
 
@@ -203,7 +210,7 @@ export class TrainMode implements Mode {
             w.val.assign(newVals);
             newVals.dispose();
         });
-        return { car, model, fitness: 0 };
+        return { car, model, fitness: 0, finished: false };
     }
 
     /**
