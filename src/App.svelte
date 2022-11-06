@@ -11,7 +11,7 @@
     />
     <ThreeCanvas />
   </div>
-  <div id="menu-pane" class="overflow-y-scroll">
+  <div id="menu-pane" class="overflow-x-hidden overflow-y-auto p-0 m-0">
     <Tabs />
   </div>
 </main>
