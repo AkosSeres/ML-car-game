@@ -50,6 +50,7 @@ export class TrainMode implements Mode {
     startTraining() {
         this.isTraining = true;
         if (this.population.length === 0) this.generatePopulation();
+        else this.resetCars();
         this.timeLeft = this.maxRunTime;
         this.lastMaxRunTime = this.timeLeft;
     }
@@ -130,6 +131,13 @@ export class TrainMode implements Mode {
 
     deactivate() {
         this.stopTraining();
+        this.removeCars();
+    }
+
+    removeCars() {
+        this.population.forEach((element) => {
+            this.gameWorld.removeGameObject(element.car);
+        });
     }
 
     resetCars() {
