@@ -57,18 +57,20 @@
     {/if}
 
     {#if mode.state == TeachModeState.None && mode.recording.length > 0}
-        <button
-            on:click={() => {
-                mode.storeRecording();
-            }}
-            class="inline-flex items-center text-center justify-center p-0.5 mb-2 overflow-hidden text-xs font-medium text-gray-900 rounded-lg group bg-gradient-to-r from-pink-300 via-purple-300 to-indigo-400 group-hover:from-pink-300 group-hover:via-purple-300 group-hover:to-indigo-400 dark:text-white dark:hover:text-gray-900 focus:ring-4 focus:outline-none focus:ring-red-100 dark:focus:ring-red-400 block mx-auto"
-        >
-            <span
-                class="relative py-1 px-2 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0"
+        <div class="block mx-auto text-center">
+            <button
+                on:click={() => {
+                    mode.storeRecording();
+                }}
+                class="inline-flex items-center text-center justify-center p-0.5 mb-0 overflow-hidden text-xs font-medium text-gray-900 rounded-lg group bg-gradient-to-r from-pink-300 via-purple-300 to-indigo-400 group-hover:from-pink-300 group-hover:via-purple-300 group-hover:to-indigo-400 dark:text-white dark:hover:text-gray-900 focus:ring-4 focus:outline-none focus:ring-red-100 dark:focus:ring-red-400 block mx-auto"
             >
-                Store recording
-            </span>
-        </button>
+                <span
+                    class="relative py-1 px-2 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0"
+                >
+                    Store recording
+                </span>
+            </button>
+        </div>
     {/if}
 
     <hr
