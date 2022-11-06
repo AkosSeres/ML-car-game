@@ -21,16 +21,22 @@
             mode.rerenderTrainPanel();
         }}
         class="block grow mx-auto focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-bold rounded-lg text-md px-5 py-2.5 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900 transition-colors duration-200 ease-in-out"
-        >{mode.isTraining ? "Stop training" : "Start training"}</button
+        >{mode.isTraining
+            ? "Stop training"
+            : mode.generationCount === 1
+            ? "Start training"
+            : "Resume training"}</button
     >
-    {#if mode.generationCount > 1 || mode.isTraining}
+    {#if mode.generationCount !== 1 || mode.isTraining}
         <button
             on:click={() => {
-                mode.timeLeft = 0;
+                if (mode.isTraining) mode.timeLeft = 0;
             }}
             type="button"
             data-tooltip-target="tooltip-gen-progress"
-            class="w-full overflow-clip hover:opacity-80 transition-opacity duration-300 ease-in-out block mx-auto text-md border border-white rounded-full relative font-medium text-center my-3"
+            class="w-full overflow-clip {mode.isTraining
+                ? 'hover:opacity-80'
+                : 'cursor-not-allowed'} transition-opacity duration-300 ease-in-out block mx-auto text-md border border-white rounded-full relative font-medium text-center my-3"
         >
             <div
                 id="generation-progress-bar"
@@ -41,12 +47,14 @@
                 Generation <b>{mode.generationCount}</b>
             </p>
         </button>
-        <Tooltip
-            triggeredBy="[data-tooltip-target='tooltip-gen-progress']"
-            placement="left"
-        >
-            Click to skip to the next generation</Tooltip
-        >
+        {#if mode.isTraining}
+            <Tooltip
+                triggeredBy="[data-tooltip-target='tooltip-gen-progress']"
+                placement="left"
+            >
+                Click to skip to the next generation</Tooltip
+            >
+        {/if}
     {/if}
 {/key}
 
