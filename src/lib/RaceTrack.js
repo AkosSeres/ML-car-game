@@ -48,13 +48,6 @@ export class RaceTrack extends GameObject {
         this.roadLength = this.roadSpline.getLength();
 
         let offset = new Offset();
-        const barrierBody = new CANNON.Body({
-            mass: 0,
-            material: new CANNON.Material({
-                friction: 0.15,
-                restitution: 0.25
-            }),
-        });
         const points = this.roadSpline.getSpacedPoints(Math.floor(this.roadLength / resolution));
         this.pointsIn2D = points.map(p => new THREE.Vector2(p.x, p.z));
         const polyLine = offset.data(points.map((p) => [p.x, p.z])).arcSegments(20).offsetLine(roadWidth / 2).map(pl => pl.map((p) => new THREE.Vector3(p[0], 0, p[1])));
@@ -72,11 +65,22 @@ export class RaceTrack extends GameObject {
                     .clone()
                     .add(linePoints[i - 1])
                     .divideScalar(2);
-                barrierBody.addShape(new CANNON.Box(
-                    new CANNON.Vec3(t.length() / 2, 0.2 / 2, 0.01 / 2)),
-                    new CANNON.Vec3(p.x, p.y + 0.1, p.z),
-                    new CANNON.Quaternion().setFromAxisAngle(new CANNON.Vec3(0, 1, 0), Math.atan2(-t.z, t.x))
-                );
+                const barrierBody = new CANNON.Body({
+                    mass: 0,
+                    material: new CANNON.Material({
+                        friction: 0.15,
+                        restitution: 0.25
+                    }),
+                    shape: new CANNON.Box(
+                        new CANNON.Vec3(t.length() / 2, 0.2 / 2, 0.01 / 2)),
+                    position: new CANNON.Vec3(p.x, p.y + 0.1, p.z),
+                    quaternion: new CANNON.Quaternion().setFromAxisAngle(new CANNON.Vec3(0, 1, 0), Math.atan2(-t.z, t.x)),
+                });
+                barrierBody.collisionFilterGroup =
+                    BARRIER_COLLISION_FILTER_GROUP;
+                barrierBody.collisionFilterMask =
+                    ~BARRIER_COLLISION_FILTER_GROUP;
+                this.bodies.push(barrierBody);
             }
         }
 
@@ -137,14 +141,6 @@ export class RaceTrack extends GameObject {
         circleFinish.position.set(this.finishX, 0.025, this.finishZ);
         this.meshes.push(circleFinish);
 
-        barrierBody.collisionFilterGroup =
-            BARRIER_COLLISION_FILTER_GROUP;
-        barrierBody.collisionFilterMask =
-            ~BARRIER_COLLISION_FILTER_GROUP;
-        this.bodies.push(barrierBody);
-        /** @type {CANNON.Body} */
-        this.barrrierBody = barrierBody;
-
         this.startX = roadPoints[0].x;
         this.startZ = roadPoints[0].z;
         const startTangent = this.roadSpline.getTangentAt(0);
@@ -175,6 +171,20 @@ export class RaceTrack extends GameObject {
         const point = new THREE.Vector2(x, z);
         const distancesSq = this.pointsIn2D.map(p => p.distanceToSquared(point));
         return distancesSq.indexOf(Math.min(...distancesSq)) / (this.pointsIn2D.length - 1);
+    }
+
+    /**
+     * Returns the friction value of the barriers.
+     */
+    get barrrierFriction() {
+        return this.bodies[0].material.friction;
+    }
+
+    /**
+     * Sets the friction value of the barriers.
+     */
+    set barrrierFriction(value) {
+        this.bodies.forEach(body => body.material.friction = value);
     }
 
     /**

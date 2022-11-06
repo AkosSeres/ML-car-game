@@ -25,7 +25,7 @@
         for="steps-range"
         class="block my-1 text-sm font-medium text-gray-300"
         >Barrier friction: <b
-            >{gameWorld.raceTrack.barrrierBody.material.friction}</b
+            >{gameWorld.raceTrack.barrrierFriction}</b
         ></label
     >
     <input
@@ -33,7 +33,7 @@
         type="range"
         min="0.0"
         max="1"
-        bind:value={gameWorld.raceTrack.barrrierBody.material.friction}
+        bind:value={gameWorld.raceTrack.barrrierFriction}
         step="0.02"
         class="w-full h-2 bg-gradient-to-r from-pink-300 via-purple-300 to-indigo-400 rounded-lg appearance-none cursor-pointer range-lg"
     />
