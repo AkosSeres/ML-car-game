@@ -66,12 +66,12 @@
 />
 
 <label
-    for="max-run-time-range"
+    for="top-ratio-range"
     class="block mb-1 mt-3 text-sm font-medium text-gray-300"
     >Do crossover with top <b>{Math.round(mode.topRatio * 100)}</b>%</label
 >
 <input
-    id="max-run-time-range"
+    id="top-ratio-range"
     type="range"
     min="0.01"
     max="1.0"
@@ -81,12 +81,12 @@
 />
 
 <label
-    for="max-run-time-range"
+    for="crossover-rate-range"
     class="block mb-1 mt-3 text-sm font-medium text-gray-300"
     >Crossover rate: <b>{Math.round(mode.crossoverRate * 100)}</b>%</label
 >
 <input
-    id="max-run-time-range"
+    id="crossover-rate-range"
     type="range"
     min="0.0"
     max="1.0"
@@ -96,16 +96,31 @@
 />
 
 <label
-    for="max-run-time-range"
+    for="mutation-rate-range"
     class="block mb-1 mt-3 text-sm font-medium text-gray-300"
     >Mutation rate: <b>{Math.round(mode.mutationRate * 100)}</b>%</label
 >
 <input
-    id="max-run-time-range"
+    id="mutation-rate-range"
     type="range"
     min="0.0"
     max="1.0"
     step="0.01"
     bind:value={mode.mutationRate}
+    class="w-full h-2 bg-gradient-to-r from-pink-300 via-purple-300 to-indigo-400 rounded-lg appearance-none cursor-pointer range-lg"
+/>
+
+<label
+    for="mutation-strength-range"
+    class="block mb-1 mt-3 text-sm font-medium text-gray-300"
+    >Mutation strength: <b>{Math.round(mode.mutationStrength * 100)}</b></label
+>
+<input
+    id="mutation-strength-range"
+    type="range"
+    min="0.0"
+    max="0.15"
+    step="0.01"
+    bind:value={mode.mutationStrength}
     class="w-full h-2 bg-gradient-to-r from-pink-300 via-purple-300 to-indigo-400 rounded-lg appearance-none cursor-pointer range-lg"
 />

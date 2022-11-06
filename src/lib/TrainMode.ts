@@ -31,6 +31,7 @@ export class TrainMode implements Mode {
     topRatio: number = 0.5;
     crossoverRate: number = 0.25;
     mutationRate: number = 0.05;
+    mutationStrength: number = 0.02;
     generationCount: number = 1;
 
     constructor(gameWorld) {
@@ -116,7 +117,7 @@ export class TrainMode implements Mode {
             for (let i = 0; i < this.population.length; i++) {
                 if (Math.random() >= this.mutationRate) continue;
                 this.population[i].model.weights.forEach(w => {
-                    const diff = tf.randomNormal(w.shape, 0, 0.01);
+                    const diff = tf.randomNormal(w.shape, 0, this.mutationStrength);
                     w.val.assign(w.val.add(diff));
                 });
             }
