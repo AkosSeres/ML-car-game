@@ -9,7 +9,7 @@ export enum TeachModeState {
     None,
 }
 
-interface Record { input: number[], action: number[] };
+interface Record { sensordDistances: number[], forwardVelocity: number, action: number[] };
 
 const CarType = BasicCar;
 const outputSize = 5; // The number of outputs the network
@@ -31,7 +31,7 @@ export class TeachMode extends PlayMode {
     constructor(gameWorld) {
         super(gameWorld);
 
-        this.inputSize = CarType.sensorNumber + 3;
+        this.inputSize = CarType.sensorNumber + 1;
         this.generateNetwork();
     }
 
@@ -86,7 +86,7 @@ export class TeachMode extends PlayMode {
     }
 
     async trainFromStored() {
-        const xArray = this.storedRecording.map(record => record.input);
+        const xArray = this.storedRecording.map(record => [...record.sensordDistances, record.forwardVelocity]);
         const yArray = this.storedRecording.map(record => record.action);
         const xDataset = tf.tensor(xArray);
         const yDataset = tf.tensor(yArray);
@@ -119,17 +119,9 @@ export class TeachMode extends PlayMode {
                 this.rerenderTeachPanel();
                 this.gameWorld.controls.reset();
             } else {
-                const carPos = this.car.getPosition();
-                const progress = this.gameWorld.raceTrack.closestPointTangentAndCompleted(carPos.x, carPos.z);
-                progress.tangent.y = 0;
-                progress.tangent.normalize();
-                const fwdDir = this.car.getForwardDir();
-                fwdDir.y = 0;
-                fwdDir.normalize();
-                const goodDir = progress.tangent.x * fwdDir.x + progress.tangent.z * fwdDir.z;
-                const sideDir = progress.tangent.x * fwdDir.z - progress.tangent.z * fwdDir.x;
                 this.recording.push({
-                    input: [...this.sensorData.map(s => s.distance), this.car.getForwardVelocity(), goodDir, sideDir],
+                    sensordDistances: this.sensorData.map(s => s.distance),
+                    forwardVelocity: this.car.getForwardVelocity(),
                     action: [+this.W, +this.A, +this.S, +this.D, +this.SPACE],
                 });
                 document.getElementById("recorded-count-span").innerText = this.recording.length.toString();
@@ -137,16 +129,7 @@ export class TeachMode extends PlayMode {
         }
 
         if (this.state === TeachModeState.Demonstrate && this.car) {
-            const carPos = this.car.getPosition();
-            const progress = this.gameWorld.raceTrack.closestPointTangentAndCompleted(carPos.x, carPos.z);
-            progress.tangent.y = 0;
-            progress.tangent.normalize();
-            const fwdDir = this.car.getForwardDir();
-            fwdDir.y = 0;
-            fwdDir.normalize();
-            const goodDir = progress.tangent.x * fwdDir.x + progress.tangent.z * fwdDir.z;
-            const sideDir = progress.tangent.x * fwdDir.z - progress.tangent.z * fwdDir.x;
-            const input = tf.tensor([[...this.sensorData.map(datum => datum.distance), this.car.getForwardVelocity(), goodDir, sideDir]]);
+            const input = tf.tensor([[...this.sensorData.map(datum => datum.distance), this.car.getForwardVelocity()]]);
             const result = this.model.predict(input) as tf.Tensor;
             const WASDSPACE = result.arraySync()[0].map(d => d >= 0.5);
             // @ts-ignore
@@ -156,7 +139,8 @@ export class TeachMode extends PlayMode {
             if (this.W || this.A || this.S || this.D || this.SPACE) {
                 this.car.applyInput(this.W, this.A, this.S, this.D, this.SPACE);
                 this.recording.push({
-                    input: [...this.sensorData.map(s => s.distance), this.car.getForwardVelocity(), goodDir, sideDir],
+                    sensordDistances: this.sensorData.map(s => s.distance),
+                    forwardVelocity: this.car.getForwardVelocity(),
                     action: [+this.W, +this.A, +this.S, +this.D, +this.SPACE],
                 });
                 document.getElementById("recorded-count-span").innerText = this.recording.length.toString();
