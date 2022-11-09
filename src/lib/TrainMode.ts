@@ -3,10 +3,11 @@ import type { GameWorld } from "./GameWorld";
 import type { Mode } from "./Mode";
 import * as tf from "@tensorflow/tfjs";
 import * as THREE from "three";
+import type { TeachMode } from "./TeachMode";
 
 interface PopulationElement {
     car: BasicCar;
-    model: tf.Sequential;
+    model: tf.LayersModel;
     fitness: number;
     finished: boolean;
 }
@@ -21,6 +22,7 @@ const outputSize = 5; // The number of outputs the network
 
 export class TrainMode implements Mode {
     gameWorld: GameWorld;
+    teachModeReference?: TeachMode;
     inputSize: number;
     isTraining: boolean = false;
     populationSize: number = 50;
@@ -35,7 +37,7 @@ export class TrainMode implements Mode {
     mutationStrength: number = 0.02;
     generationCount: number = 1;
 
-    constructor(gameWorld) {
+    constructor(gameWorld: GameWorld) {
         this.gameWorld = gameWorld;
 
         this.inputSize = CarType.sensorNumber + 1;
@@ -46,6 +48,20 @@ export class TrainMode implements Mode {
         for (let i = 0; i < this.populationSize; i++) {
             this.population.push(this.generateAgent());
         }
+    }
+
+    loadTeachedModelToPopulation() {
+        if (!this.teachModeReference) return;
+        if (this.population.length === 0) this.generatePopulation();
+        this.stopTraining();
+        this.generationCount = 1;
+        this.population.forEach(e => {
+            e.model.dispose();
+            this.teachModeReference.model.save(tf.io.withSaveHandler(async artifacts => {
+                e.model = await tf.loadLayersModel(tf.io.fromMemory(artifacts));
+            }));
+        });
+        this.rerenderTrainPanel();
     }
 
     startTraining() {
@@ -94,8 +110,8 @@ export class TrainMode implements Mode {
                 const vel = element.car.getForwardVelocity();
                 const input = tf.tensor([[...sens.map(s => s.distance), vel]]);
                 const result = element.model.predict(input) as tf.Tensor;
-                const WASDSPACE = result.arraySync()[0].map(d => d >= 0.5);
-                element.car.applyInput(...WASDSPACE);
+                const WASDSPACE = (result.arraySync() as number[][])[0].map((d: number) => d >= 0.5);
+                element.car.applyInput(WASDSPACE[0], WASDSPACE[1], WASDSPACE[2], WASDSPACE[3], WASDSPACE[4]);
                 input.dispose();
                 result.dispose();
 
@@ -107,7 +123,8 @@ export class TrainMode implements Mode {
                 }
             });
 
-            document.getElementById("generation-progress-bar").style.width = `${(this.timeLeft / this.lastMaxRunTime) * 100}%`;
+            const progressBar = document.getElementById("generation-progress-bar");
+            if (progressBar) progressBar.style.width = `${(this.timeLeft / this.lastMaxRunTime) * 100}%`;
         }
     }
 
@@ -130,6 +147,7 @@ export class TrainMode implements Mode {
                     const w = child.model.weights[wIdx];
                     const w1 = parent1.model.weights[wIdx];
                     const w2 = parent2.model.weights[wIdx];
+                    // @ts-ignore
                     w.val.assign(w1.val.mul(r).add(w2.val.mul(1 - r)));
                 }
             }
@@ -137,7 +155,8 @@ export class TrainMode implements Mode {
             for (let i = 0; i < this.population.length; i++) {
                 if (Math.random() >= this.mutationRate) continue;
                 this.population[i].model.weights.forEach(w => {
-                    const diff = tf.randomNormal(w.shape, 0, this.mutationStrength);
+                    const diff = tf.randomNormal(w.shape as number[], 0, this.mutationStrength);
+                    // @ts-ignore
                     w.val.assign(w.val.add(diff));
                 });
             }
@@ -206,7 +225,8 @@ export class TrainMode implements Mode {
             // metrics: ['accuracy'],
         });
         model.weights.forEach(w => {
-            const newVals = tf.randomNormal(w.shape);
+            const newVals = tf.randomNormal(w.shape as number[]);
+            // @ts-ignore
             w.val.assign(newVals);
             newVals.dispose();
         });

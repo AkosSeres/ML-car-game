@@ -175,3 +175,18 @@
         </span>
     </button>
 </div>
+
+<div class="block mt-2 mx-auto text-center">
+    <button
+        on:click={() => {
+            mode.loadTeachedModelToPopulation();
+        }}
+        class="inline-flex items-center justify-center p-0.5 overflow-hidden font-bold text-sm text-gray-900 rounded-lg group bg-gradient-to-r from-pink-300 via-purple-300 to-indigo-400 group-hover:from-red-200 group-hover:via-red-300 group-hover:to-yellow-200 dark:text-white dark:hover:text-gray-900 focus:ring-4 focus:outline-none focus:ring-red-100 dark:focus:ring-red-400"
+    >
+        <span
+            class="relative px-2 py-1 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0"
+        >
+            Initialize population<br /> from teached model
+        </span>
+    </button>
+</div>

@@ -24,8 +24,11 @@
             gameWorld = gameWorldNew;
             modes.push(new DrawMode(gameWorld));
             modes.push(new PlayMode(gameWorld));
-            modes.push(new TrainMode(gameWorld));
-            modes.push(new TeachMode(gameWorld));
+            const teachMode = new TeachMode(gameWorld);
+            const trainMode = new TrainMode(gameWorld);
+            trainMode.teachModeReference = teachMode;
+            modes.push(trainMode);
+            modes.push(teachMode);
             setActiveTab(defaultTab);
         }
     });

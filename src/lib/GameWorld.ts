@@ -32,7 +32,7 @@ export class GameWorld {
      * 
      * @param {HTMLCanvasElement} canvas The canvas to render onto.
      */
-    constructor(canvas) {
+    constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
         this.createCamera();
         this.scene = new THREE.Scene();
