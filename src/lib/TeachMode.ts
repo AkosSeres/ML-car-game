@@ -39,8 +39,8 @@ export class TeachMode extends PlayMode {
         if (this.model) this.model.dispose();
         this.model = tf.sequential({
             layers: [
-                tf.layers.dense({ inputShape: [this.inputSize], units: this.hiddenLayerSize, activation: 'tanh' }),
-                tf.layers.dense({ units: outputSize, activation: 'softmax' }),
+                tf.layers.dense({ inputShape: [this.inputSize], units: this.hiddenLayerSize, activation: 'relu' }),
+                tf.layers.dense({ units: outputSize, activation: 'sigmoid' }),
             ]
         });
         this.model.compile({

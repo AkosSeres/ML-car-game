@@ -215,8 +215,8 @@ export class TrainMode implements Mode {
         this.gameWorld.addGameObject(car);
         const model = tf.sequential({
             layers: [
-                tf.layers.dense({ inputShape: [this.inputSize], units: this.hiddenLayerSize, activation: 'tanh' }),
-                tf.layers.dense({ units: outputSize, activation: 'softmax' }),
+                tf.layers.dense({ inputShape: [this.inputSize], units: this.hiddenLayerSize, activation: 'relu' }),
+                tf.layers.dense({ units: outputSize, activation: 'sigmoid' }),
             ]
         });
         model.compile({
