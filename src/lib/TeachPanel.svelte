@@ -22,12 +22,14 @@
                     mode.recordButtonPressed();
                 } else if (mode.state == TeachModeState.Teach) {
                     mode.discardButtonPressed();
+                } else if (mode.state == TeachModeState.Demonstrate){
+                    mode.stopAIDemonstration();
                 }
             }}
             type="button"
             class="focus:outline-none text-white grow flex-1 transition py-1 px-2 text-sm focus:ring-red-300 font-bold rounded-l-lg border border-gray-200 focus:z-10 focus:ring-1 bg-red-600 border-gray-600 text-white hover:text-white hover:bg-red-700"
         >
-            {mode.state == TeachModeState.None ? "New recording" : "Discard"}
+            {mode.state == TeachModeState.None ? "New recording" : "Stop"}
         </button>
         <button
             on:click={() => {
@@ -38,8 +40,8 @@
                 }
             }}
             type="button"
-            class="text-purple-700 hover:text-white grow flex-1 transition border border-purple-700 hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 font-bold rounded-r-lg text-sm px-2 py-1 text-center dark:border-purple-400 dark:text-purple-400 dark:hover:text-white dark:hover:bg-purple-500 dark:focus:ring-purple-900"
-            >Test AI car</button
+            class="text-purple-700 hover:text-white grow flex-1 transition border border-purple-700 hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 font-bold rounded-r-lg text-sm px-2 py-1 text-center dark:border-purple-400 dark:text-purple-400 dark:hover:text-white dark:hover:bg-purple-500 dark:focus:ring-purple-900 {mode.state == TeachModeState.Teach ? 'opacity-50 cursor-not-allowed' : ''}"
+            >{mode.state == TeachModeState.Demonstrate ? "Stop" : "Test"} AI car</button
         >
     </div>
 

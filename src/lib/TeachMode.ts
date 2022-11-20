@@ -60,7 +60,6 @@ export class TeachMode extends PlayMode {
 
     discardButtonPressed() {
         this.state = TeachModeState.None;
-        this.recording = [];
         this.removeCar();
         this.gameWorld.controls.reset();
         this.rerenderTeachPanel();
