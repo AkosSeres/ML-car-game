@@ -1,6 +1,7 @@
 import { BasicCar } from "./BasicCar";
 import { PlayMode } from "./PlayMode";
 import * as tf from "@tensorflow/tfjs";
+import type { GameWorld } from "./GameWorld";
 tf.setBackend("cpu"); // can be "cpu" or "webgl" or "wasm"
 
 export enum TeachModeState {
@@ -16,7 +17,7 @@ const outputSize = 5; // The number of outputs the network
 
 export class TeachMode extends PlayMode {
     inputSize: number;
-    model: tf.Sequential;
+    model: tf.Sequential = tf.sequential();
     _state: TeachModeState = TeachModeState.None;
     previousState: TeachModeState = TeachModeState.None;
     recording: Record[] = [];
@@ -28,7 +29,7 @@ export class TeachMode extends PlayMode {
     _batchSize: number = 32;
     _hiddenLayerSize: number = 10;
 
-    constructor(gameWorld) {
+    constructor(gameWorld: GameWorld) {
         super(gameWorld);
 
         this.inputSize = CarType.sensorNumber + 1;
@@ -95,7 +96,7 @@ export class TeachMode extends PlayMode {
             epochs: this.numberOfEpochs,
             callbacks: {
                 onEpochEnd: (epoch, logs) => {
-                    this.currentLoss = logs.loss;
+                    if (logs) this.currentLoss = logs.loss;
                     this.epochsDone = epoch + 1;
                     this.rerenderTeachPanel();
                 }, onTrainEnd: () => {
@@ -205,6 +206,14 @@ export class TeachMode extends PlayMode {
             this.previousState = this._state;
             this._state = newState;
         }
+    }
+
+    /**
+     * Empties the store where the recorded data is stored.
+     */
+    emptyStoredRecording() {
+        this.storedRecording = [];
+        this.rerenderTeachPanel();
     }
 
     /**

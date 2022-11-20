@@ -53,23 +53,21 @@
             mode.previousState === TeachModeState.Teach
                 ? "inputs recorded"
                 : "corrections recorded"}
-        </div>
-    {/if}
 
-    {#if mode.state == TeachModeState.None && mode.recording.length > 0}
-        <div class="block mx-auto text-center">
-            <button
-                on:click={() => {
-                    mode.storeRecording();
-                }}
-                class="inline-flex items-center text-center justify-center p-0.5 mb-0 overflow-hidden text-xs font-medium text-gray-900 rounded-lg group bg-gradient-to-r from-pink-300 via-purple-300 to-indigo-400 group-hover:from-pink-300 group-hover:via-purple-300 group-hover:to-indigo-400 dark:text-white dark:hover:text-gray-900 focus:ring-4 focus:outline-none focus:ring-red-100 dark:focus:ring-red-400 block mx-auto"
-            >
-                <span
-                    class="relative py-1 px-2 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0"
+            <div class="block text-center ml-auto mr-1.5">
+                <button
+                    on:click={() => {
+                        mode.storeRecording();
+                    }}
+                    class="inline-flex items-center text-center justify-center p-0.5 mb-0 overflow-hidden text-sm font-bold text-gray-900 rounded-full group bg-gradient-to-r from-pink-300 via-purple-300 to-indigo-400 group-hover:from-pink-300 group-hover:via-purple-300 group-hover:to-indigo-400 dark:text-white dark:hover:text-gray-900 focus:ring-4 focus:outline-none focus:ring-red-100 dark:focus:ring-red-400 block mx-auto"
                 >
-                    Store recording
-                </span>
-            </button>
+                    <span
+                        class="relative py-0.25 px-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-full group-hover:bg-opacity-0"
+                    >
+                        Store
+                    </span>
+                </button>
+            </div>
         </div>
     {/if}
 
@@ -79,8 +77,18 @@
 
     <div style="display: hidden;" class="flex justify-between mt-4 mb-1">
         <span class="text-base font-medium text-blue-700 dark:text-white"
-            >{mode.storedRecording.length} inputs stored.
+            >{mode.storedRecording.length} inputs stored. &nbsp;
         </span>
+        {#if mode.storedRecording.length > 0 && !mode.isCurrentlyFitting}
+            <button
+                on:click={() => {
+                    mode.emptyStoredRecording();
+                }}
+                type="button"
+                class="block text-white bg-yellow-400 hover:bg-yellow-500 focus:outline-none focus:ring-4 font-bold rounded-full text-sm px-3 py-0.5 text-center ml-auto mr-2 mb-3 focus:ring-yellow-900"
+                >Empty store</button
+            >
+        {/if}
     </div>
 
     {#if mode.storedRecording.length > 0 && !mode.isCurrentlyFitting}
