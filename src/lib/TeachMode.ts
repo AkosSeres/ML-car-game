@@ -10,7 +10,7 @@ export enum TeachModeState {
     None,
 }
 
-interface Record { sensordDistances: number[], forwardVelocity: number, action: number[] };
+interface Record { sensorData: any[], forwardVelocity: number, action: number[], networkInput: number[] };
 
 const CarType = BasicCar;
 const outputSize = 5; // The number of outputs the network
@@ -32,7 +32,7 @@ export class TeachMode extends PlayMode {
     constructor(gameWorld: GameWorld) {
         super(gameWorld);
 
-        this.inputSize = CarType.sensorNumber + 1;
+        this.inputSize = CarType.networkInputSize;
         this.generateNetwork();
     }
 
@@ -87,7 +87,7 @@ export class TeachMode extends PlayMode {
     }
 
     async trainFromStored() {
-        const xArray = this.storedRecording.map(record => [...record.sensordDistances, record.forwardVelocity]);
+        const xArray = this.storedRecording.map(record => record.networkInput);
         const yArray = this.storedRecording.map(record => record.action);
         const xDataset = tf.tensor(xArray);
         const yDataset = tf.tensor(yArray);
@@ -121,8 +121,7 @@ export class TeachMode extends PlayMode {
                 this.gameWorld.controls.reset();
             } else {
                 this.recording.push({
-                    sensordDistances: this.sensorData.map(s => s.distance),
-                    forwardVelocity: this.car.getForwardVelocity(),
+                    ...this.car.getNetworkInput(this.gameWorld),
                     action: [+this.W, +this.A, +this.S, +this.D, +this.SPACE],
                 });
                 document.getElementById("recorded-count-span").innerText = this.recording.length.toString();
@@ -130,9 +129,9 @@ export class TeachMode extends PlayMode {
         }
 
         if (this.state === TeachModeState.Demonstrate && this.car) {
-            const input = tf.tensor([[...this.sensorData.map(datum => datum.distance), this.car.getForwardVelocity()]]);
+            const input = tf.tensor([this.car.getNetworkInput(this.gameWorld).networkInput]);
             const result = this.model.predict(input) as tf.Tensor;
-            const WASDSPACE = result.arraySync()[0].map(d => d >= 0.5);
+            const WASDSPACE = (result.arraySync() as number[][])[0].map(d => d >= 0.5);
             // @ts-ignore
             this.car.applyInput(...WASDSPACE);
             input.dispose();
@@ -140,8 +139,7 @@ export class TeachMode extends PlayMode {
             if (this.W || this.A || this.S || this.D || this.SPACE) {
                 this.car.applyInput(this.W, this.A, this.S, this.D, this.SPACE);
                 this.recording.push({
-                    sensordDistances: this.sensorData.map(s => s.distance),
-                    forwardVelocity: this.car.getForwardVelocity(),
+                    ...this.car.getNetworkInput(this.gameWorld),
                     action: [+this.W, +this.A, +this.S, +this.D, +this.SPACE],
                 });
                 document.getElementById("recorded-count-span").innerText = this.recording.length.toString();

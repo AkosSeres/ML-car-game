@@ -40,7 +40,7 @@ export class TrainMode implements Mode {
     constructor(gameWorld: GameWorld) {
         this.gameWorld = gameWorld;
 
-        this.inputSize = CarType.sensorNumber + 1;
+        this.inputSize = CarType.networkInputSize;
     }
 
     generatePopulation() {
@@ -112,9 +112,8 @@ export class TrainMode implements Mode {
 
             this.population.forEach((element) => {
                 if (element.finished) return;
-                const sens = element.car.getSensorData(this.gameWorld);
-                const vel = element.car.getForwardVelocity();
-                const input = tf.tensor([[...sens.map(s => s.distance), vel]]);
+                const netInput = element.car.getNetworkInput(this.gameWorld);
+                const input = tf.tensor([netInput.networkInput]);
                 const result = element.model.predict(input) as tf.Tensor;
                 const WASDSPACE = (result.arraySync() as number[][])[0].map((d: number) => d >= 0.5);
                 element.car.applyInput(WASDSPACE[0], WASDSPACE[1], WASDSPACE[2], WASDSPACE[3], WASDSPACE[4]);

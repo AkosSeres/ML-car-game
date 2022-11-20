@@ -238,6 +238,39 @@ export class BasicCar extends GameObject {
     }
 
     /**
+     * Returns the input data for the neural network.
+     * 
+     * @param {GameWorld} gameWorld The world to which the car belongs.
+     * @returns The input data for the neural network.
+     */
+    getNetworkInput(gameWorld) {
+        let sensorData = this.getSensorData(gameWorld);
+        let fwdVel = this.getForwardVelocity();
+        let pos = this.getPosition();
+        let tangent = gameWorld.raceTrack.closestPointTangentAndCompleted(pos.x, pos.z).tangent;
+        tangent.y = 0;
+        tangent.normalize();
+        let forwardAmount = tangent.dot(this.getForwardDir());
+        let sideAmount = tangent.dot(this.getSideDir());
+        return {
+            sensorData,
+            forwardVelocity: fwdVel,
+            forwardAmount,
+            sideAmount,
+            networkInput: [
+                ...sensorData.map(data => data.distance),
+                fwdVel,
+                forwardAmount,
+                sideAmount,
+            ],
+        };
+    }
+
+    static get networkInputSize() {
+        return this.sensorNumber + 3;
+    }
+
+    /**
      * Returns the position of the car.
      * 
      * @return {THREE.Vector3} The position of the car.

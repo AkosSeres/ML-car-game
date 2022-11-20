@@ -2,7 +2,6 @@ import * as THREE from "three";
 import type { GameWorld } from "./GameWorld";
 import type { Mode } from "./Mode";
 import { BasicCar } from "./BasicCar";
-import { BARRIER_RAYCAST_LAYER } from "./RaceTrack";
 
 const carBodyMaterial = new THREE.MeshNormalMaterial();
 const carWheelMaterial = new THREE.MeshPhongMaterial({
@@ -25,7 +24,7 @@ export class PlayMode implements Mode {
     private _showSensors: boolean = false;
     completion: number = 0;
 
-    constructor(gameWorld) {
+    constructor(gameWorld: GameWorld) {
         this.gameWorld = gameWorld;
         this.keydownHandler = (e) => {
             switch (e.key) {
@@ -77,7 +76,7 @@ export class PlayMode implements Mode {
         };
     }
 
-    update(delta: number) {
+    update(_: number) {
         this.car?.applyInput(this.W, this.A, this.S, this.D, this.SPACE);
 
         if (this.car) {
