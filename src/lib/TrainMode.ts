@@ -57,8 +57,14 @@ export class TrainMode implements Mode {
         this.generationCount = 1;
         this.population.forEach(e => {
             e.model.dispose();
-            this.teachModeReference.model.save(tf.io.withSaveHandler(async artifacts => {
+            this.teachModeReference?.model.save(tf.io.withSaveHandler(async artifacts => {
                 e.model = await tf.loadLayersModel(tf.io.fromMemory(artifacts));
+                return {
+                    modelArtifactsInfo: {
+                        dateSaved: new Date(),
+                        modelTopologyType: "JSON",
+                    }
+                };
             }));
         });
         this.rerenderTrainPanel();
