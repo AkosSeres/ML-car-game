@@ -247,11 +247,12 @@ export class BasicCar extends GameObject {
         let sensorData = this.getSensorData(gameWorld);
         let fwdVel = this.getForwardVelocity();
         let pos = this.getPosition();
-        let tangent = gameWorld.raceTrack.closestPointTangentAndCompleted(pos.x, pos.z).tangent;
+        const progressData = gameWorld.raceTrack.closestPointTangentAndCompleted(pos.x, pos.z);
+        let tangent = progressData.tangent;
         tangent.y = 0;
         tangent.normalize();
-        let forwardAmount = tangent.dot(this.getForwardDir());
-        let sideAmount = tangent.dot(this.getSideDir());
+        let forwardAmount = tangent.dot(this.getForwardDir().setY(0).normalize());
+        let sideAmount = tangent.dot(this.getSideDir().setY(0).normalize());
         return {
             sensorData,
             forwardVelocity: fwdVel,
@@ -263,6 +264,7 @@ export class BasicCar extends GameObject {
                 forwardAmount,
                 sideAmount,
             ],
+            completed: progressData.completed,
         };
     }
 

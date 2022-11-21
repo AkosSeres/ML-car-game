@@ -175,8 +175,21 @@ export class RaceTrack extends GameObject {
 
     closestPointTangentAndCompleted(x, z) {
         const idx = this.closestPointIdx(x, z);
-        const t = this.roadSpline.getTangentAt(idx / (this.pointsIn2D.length - 1));
-        const completed = idx / (this.pointsIn2D.length - 1);
+        let behind = idx - 1;
+        if (behind < 0) behind = this.pointsIn2D.length - 1;
+        const beindP = this.pointsIn2D[behind];
+        const behindDist = beindP.distanceTo(new THREE.Vector2(x, z));
+        let ahead = idx + 1;
+        if (ahead >= this.pointsIn2D.length) ahead = 0;
+        const aheadP = this.pointsIn2D[ahead];
+        const aheadDist = aheadP.distanceTo(new THREE.Vector2(x, z));
+        const relevantIndices = behindDist < aheadDist ? [behind, idx] : [idx, ahead];
+        const d = this.pointsIn2D[relevantIndices[1]].clone().sub(this.pointsIn2D[relevantIndices[0]]);
+        const fracIdx = relevantIndices[0] + d.dot(new THREE.Vector2(x, z).sub(this.pointsIn2D[relevantIndices[0]])) / d.lengthSq();
+        let completed = fracIdx / (this.pointsIn2D.length - 1);
+        if (completed < 0) completed = 0;
+        if (completed > 1) completed = 1;
+        const t = this.roadSpline.getTangentAt(completed);
         return { tangent: t, completed };
     }
 

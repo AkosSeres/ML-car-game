@@ -101,8 +101,7 @@ export class PlayMode implements Mode {
                 networkInput.forwardAmount
             )}rad)`;
 
-            const carPosition = this.car.getPosition();
-            this.completion = this.gameWorld.raceTrack.amountCompleted(carPosition.x, carPosition.z);
+            this.completion = networkInput.completed;
             document.getElementById("completion-text").innerText = (this.completion * 100).toFixed(1) + "%";
             document.getElementById("completion-bar").style.width = (this.completion * 100) + "%";
         }
