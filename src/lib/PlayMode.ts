@@ -80,7 +80,8 @@ export class PlayMode implements Mode {
         this.car?.applyInput(this.W, this.A, this.S, this.D, this.SPACE);
 
         if (this.car) {
-            this.sensorData = this.car.getSensorData(this.gameWorld);
+            const networkInput = this.car.getNetworkInput(this.gameWorld);
+            this.sensorData = networkInput.sensorData;
             this.sensorData.forEach((sensorData, idx) => {
                 const arrowHelper = this.arrowHelpers[idx];
                 arrowHelper.setLength(sensorData.distance, 0.05, 0.03);
@@ -94,6 +95,11 @@ export class PlayMode implements Mode {
                     domElement.innerText = sensorData.distance.toFixed(2);
                 }
             });
+
+            document.getElementById("car-rotation-compass").style.transform = `rotate(${Math.atan2(
+                networkInput.sideAmount,
+                networkInput.forwardAmount
+            )}rad)`;
 
             const carPosition = this.car.getPosition();
             this.completion = this.gameWorld.raceTrack.amountCompleted(carPosition.x, carPosition.z);

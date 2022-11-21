@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { PlayMode } from "./PlayMode";
+    import { Tooltip } from "flowbite-svelte";
 
     export let mode: PlayMode;
 </script>
@@ -22,6 +23,24 @@
             style="width: {mode.completion * 100}%"
         />
     </div>
+
+    <div
+        class="mx-auto w-10 aspect-square rounded-full overflow-hidden border-2 dark:border-gray-700"
+        style="transform: rotate(0rad)"
+        id="car-rotation-compass"
+    >
+        <div class="block mx-auto w-1 h-full rounded-full border-0 bg-gray-500">
+            <div
+                class="m-0 w-full aspect-square border-0 bg-gray-200 rounded-full"
+            />
+        </div>
+    </div>
+    <Tooltip placement="left"
+        ><div class="max-w-xs text-justify">
+            This is the car's rotation compass. It shows the car's current
+            rotation relative to the track.
+        </div></Tooltip
+    >
 
     <div class="flex justify-between mb-1">
         <span class="text-base font-medium text-blue-700 dark:text-white"
