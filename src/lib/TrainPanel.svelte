@@ -176,7 +176,7 @@
     </button>
 </div>
 
-<div class="block mt-2 mx-auto text-center">
+<div class="block mt-2 mx-auto mb-5 text-center">
     <button
         on:click={() => {
             mode.loadTeachedModelToPopulation();
@@ -190,3 +190,41 @@
         </span>
     </button>
 </div>
+
+<label
+    for="chase-first-toggle"
+    class="inline-flex relative items-center cursor-pointer mb-4"
+>
+    <input
+        type="checkbox"
+        value=""
+        bind:checked={mode.chaseFirstCar}
+        on:change={(e) => {
+            // @ts-ignore
+            if (!e.target.checked) mode.gameWorld.controls.reset();
+        }}
+        id="chase-first-toggle"
+        class="sr-only peer"
+    />
+    <div
+        class="w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all dark:border-gray-600 peer-checked:bg-gradient-to-r from-pink-300 via-purple-300 to-indigo-400"
+    />
+    <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300"
+        >Chase first car</span
+    >
+
+    <!-- <div class="block text-center ml-2">
+        <button
+            on:click={() => {
+                mode.gameWorld.controls.reset();
+            }}
+            class="inline-flex items-center text-center justify-center p-0.5 mb-0 overflow-hidden text-sm font-bold text-gray-900 rounded-full group bg-gradient-to-r from-pink-300 via-purple-300 to-indigo-400 group-hover:from-pink-300 group-hover:via-purple-300 group-hover:to-indigo-400 dark:text-white dark:hover:text-gray-900 focus:ring-4 focus:outline-none focus:ring-red-100 dark:focus:ring-red-400 block mx-auto"
+        >
+            <span
+                class="relative py-0.25 px-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-full group-hover:bg-opacity-0"
+            >
+                Reset camera
+            </span>
+        </button>
+    </div> -->
+</label>

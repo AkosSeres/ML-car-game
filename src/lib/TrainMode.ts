@@ -36,6 +36,7 @@ export class TrainMode implements Mode {
     mutationRate: number = 0.05;
     mutationStrength: number = 0.02;
     generationCount: number = 1;
+    chaseFirstCar: boolean = false;
 
     constructor(gameWorld: GameWorld) {
         this.gameWorld = gameWorld;
@@ -110,9 +111,16 @@ export class TrainMode implements Mode {
                 this.rerenderTrainPanel();
             }
 
+            let bestCar: BasicCar | undefined = undefined
+            let bestCompleted = 0;
+
             this.population.forEach((element) => {
                 if (element.finished) return;
                 const netInput = element.car.getNetworkInput(this.gameWorld);
+                if (netInput.completed > bestCompleted) {
+                    bestCar = element.car;
+                    bestCompleted = netInput.completed;
+                }
                 const input = tf.tensor([netInput.networkInput]);
                 const result = element.model.predict(input) as tf.Tensor;
                 const WASDSPACE = (result.arraySync() as number[][])[0].map((d: number) => d >= 0.5);
@@ -127,6 +135,18 @@ export class TrainMode implements Mode {
                     element.fitness = 1.0 + this.timeLeft;
                 }
             });
+
+            if (this.chaseFirstCar && bestCar) {
+                this.gameWorld.controls.target = bestCar.getPosition();
+                this.gameWorld.controls.target.y += 0.2;
+                let fwd = bestCar.getForwardDir();
+                fwd.y = 0;
+                fwd.normalize();
+                fwd.multiplyScalar(-0.5);
+                fwd.y = 0.2;
+                this.gameWorld.camera.position.copy(bestCar.getPosition());
+                this.gameWorld.camera.position.add(fwd);
+            }
 
             const progressBar = document.getElementById("generation-progress-bar");
             if (progressBar) progressBar.style.width = `${(this.timeLeft / this.lastMaxRunTime) * 100}%`;
