@@ -219,16 +219,19 @@ export class GameWorld {
      */
     renderDebug(delta: number) {
         const tfInfo = tf.memory();
+        const renderTime = this.timings.renderEnd - this.timings.renderStart;
+        const uiTime = this.timings.uiEnd - this.timings.uiStart;
+        const physicsTime = this.timings.physicsEnd - this.timings.physicsStart;
         document.getElementById("debug-element").innerText =
             `FPS: ${Math.round(1 / delta)}
-            Delta: ${(delta * 1000).toFixed(2)}ms, ${(this.timings.renderEnd - this.timings.renderStart).toFixed(2)}ms render, ${(this.timings.physicsEnd - this.timings.physicsStart).toFixed(2)}ms physics, ${(this.timings.uiEnd - this.timings.uiStart).toFixed(2)}ms UI
+            Delta: ${(renderTime + uiTime + physicsTime).toFixed(2)}ms, ${renderTime.toFixed(2)}ms render, ${physicsTime.toFixed(2)}ms physics, ${uiTime.toFixed(2)}ms UI
             Pysics bodies: ${this.world.bodies.length}
             Physics constraints: ${this.world.constraints.length}
             Game objects: ${this.gameObjects.length}
             Three Meshes: ${this.scene.children.length}
             Three Memory info: ${this.renderer.info.memory.geometries} geometries, ${this.renderer.info.memory.textures} textures
             Render info: ${this.renderer.info.render.calls} calls, ${this.renderer.info.render.frame} frame, ${this.renderer.info.render.lines} lines, ${this.renderer.info.render.points} points, ${this.renderer.info.render.triangles} triangles
-            Program info: ${this.renderer.info.programs.length} programs
+            Program info: ${this.renderer.info.programs?.length} programs
             Tensorflow: ${tfInfo.numBytes} btyes, ${tfInfo.numDataBuffers} databuffers, ${tfInfo.numTensors} tensors, ${tfInfo.unreliable} unreliable`;
     }
 
