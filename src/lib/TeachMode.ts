@@ -27,7 +27,7 @@ export class TeachMode extends PlayMode {
     epochsDone: number = 0;
     _numberOfEpochs: number = 40;
     _batchSize: number = 32;
-    _hiddenLayerSize: number = 10;
+    _hiddenLayerSize: number = 16;
 
     constructor(gameWorld: GameWorld) {
         super(gameWorld);

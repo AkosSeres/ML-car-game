@@ -29,7 +29,7 @@ export class TrainMode implements Mode {
     maxRunTime: number = 20; // The maximum time a generation can run for in seconds.
     lastMaxRunTime: number = 20;
     population: PopulationElement[] = [];
-    hiddenLayerSize: number = 10;
+    hiddenLayerSize: number = 16;
     timeLeft: number = 0;
     topRatio: number = 0.5;
     crossoverRate: number = 0.25;

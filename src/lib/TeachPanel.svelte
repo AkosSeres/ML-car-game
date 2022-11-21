@@ -3,6 +3,7 @@
     import EnvironmentSetter from "./EnvironmentSetter.svelte";
     import CarDataDisplay from "./CarDataDisplay.svelte";
     import PlayModeSettings from "./PlayModeSettings.svelte";
+    import { Tooltip } from "flowbite-svelte";
 
     export let mode: TeachMode;
 
@@ -22,7 +23,7 @@
                     mode.recordButtonPressed();
                 } else if (mode.state == TeachModeState.Teach) {
                     mode.discardButtonPressed();
-                } else if (mode.state == TeachModeState.Demonstrate){
+                } else if (mode.state == TeachModeState.Demonstrate) {
                     mode.stopAIDemonstration();
                 }
             }}
@@ -40,7 +41,10 @@
                 }
             }}
             type="button"
-            class="text-purple-700 hover:text-white grow flex-1 transition border border-purple-700 hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 font-bold rounded-r-lg text-sm px-2 py-1 text-center dark:border-purple-400 dark:text-purple-400 dark:hover:text-white dark:hover:bg-purple-500 dark:focus:ring-purple-900 {mode.state == TeachModeState.Teach ? 'opacity-50 cursor-not-allowed' : ''}"
+            class="text-purple-700 hover:text-white grow flex-1 transition border border-purple-700 hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 font-bold rounded-r-lg text-sm px-2 py-1 text-center dark:border-purple-400 dark:text-purple-400 dark:hover:text-white dark:hover:bg-purple-500 dark:focus:ring-purple-900 {mode.state ==
+            TeachModeState.Teach
+                ? 'opacity-50 cursor-not-allowed'
+                : ''}"
             >{mode.state == TeachModeState.Demonstrate ? "Stop" : "Test"} AI car</button
         >
     </div>
@@ -156,6 +160,18 @@
             class="col-span-2 py-2 px-2 rounded-bl-xl border-b border-gray-600 text-gray-900 bg-gradient-to-r from-pink-300 via-purple-300 to-indigo-400"
         >
             Hidden layer units
+            <span
+                style="line-height: 140%;"
+                class="inline-block my-auto ml-auto p-0 text-center ml-2 w-[1.25em] h-[1.25em] font-bold text-black bg-orange-100 rounded-full"
+            >
+                !
+            </span>
+            <Tooltip placement="left"
+                ><div class="max-w-xs text-justify">
+                    Changing this value will reset the model. The number of
+                    units in the hidden layer. The default value is 16.
+                </div></Tooltip
+            >
         </li>
         <input
             type="number"
