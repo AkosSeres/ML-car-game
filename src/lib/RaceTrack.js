@@ -173,6 +173,16 @@ export class RaceTrack extends GameObject {
         return distancesSq.indexOf(Math.min(...distancesSq));
     }
 
+    /**
+     * Returns the completion percentage of the track for the given position.
+     * Also returns the tangent of the track at the given position.
+     * 
+     * @param {number} x The x coordinate of the query point.
+     * @param {number} z The z coordinate of the query point.
+     * 
+     * @returns {{completed: number, tangent: THREE.Vector3}} The completion percentage and the tangent of the track at the given position.
+     * 
+     */
     closestPointTangentAndCompleted(x, z) {
         const idx = this.closestPointIdx(x, z);
         let behind = idx - 1;
@@ -209,14 +219,15 @@ export class RaceTrack extends GameObject {
      * Returns the friction value of the barriers.
      */
     get barrrierFriction() {
-        return this.bodies[0].material.friction;
+        return this.bodies[0].material?.friction;
     }
 
     /**
      * Sets the friction value of the barriers.
      */
     set barrrierFriction(value) {
-        this.bodies.forEach(body => body.material.friction = value);
+        if (typeof value !== 'undefined')
+            this.bodies.forEach(body => { if (body.material) body.material.friction = value; });
     }
 
     /**
