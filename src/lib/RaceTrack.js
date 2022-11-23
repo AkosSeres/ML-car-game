@@ -157,7 +157,7 @@ export class RaceTrack extends GameObject {
      * @returns {boolean} Whether the point is inside the finish area of the track.
      */
     isFinished(x, z) {
-        return (this.finishX - x) ** 2 + (this.finishZ - z) ** 2 < this.roadWidth ** 2;
+        return (this.finishX - x) ** 2 + (this.finishZ - z) ** 2 < (this.roadWidth * 0.5) ** 2;
     }
 
     /**
