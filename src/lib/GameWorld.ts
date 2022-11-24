@@ -215,6 +215,22 @@ export class GameWorld {
     }
 
     /**
+     * Resets the camera to its default position, depending on the track.
+     */
+    resetCamera() {
+        this.controls.target.set(0, 0, 0);
+        const startX = this.raceTrack.startX;
+        const startZ = this.raceTrack.startZ;
+        this.camera.position.set(startX, 0, startZ);
+        this.camera.position.multiplyScalar(1.5);
+        this.camera.position.y = 3;
+        this.controls.minDistance = 0.1;
+        this.controls.maxDistance = 20;
+        this.controls.update();
+    }
+
+
+    /**
      * Renders the debug panel of the whole app to the canvas.
      */
     renderDebug(delta: number) {

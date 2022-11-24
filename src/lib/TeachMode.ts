@@ -61,7 +61,7 @@ export class TeachMode extends PlayMode {
     discardButtonPressed() {
         this.state = TeachModeState.None;
         this.removeCar();
-        this.gameWorld.controls.reset();
+        this.gameWorld.resetCamera();
         this.rerenderTeachPanel();
     }
 
@@ -75,7 +75,7 @@ export class TeachMode extends PlayMode {
     stopAIDemonstration() {
         this.state = TeachModeState.None;
         this.removeCar();
-        this.gameWorld.controls.reset();
+        this.gameWorld.resetCamera();
         this.rerenderTeachPanel();
     }
 
@@ -117,7 +117,7 @@ export class TeachMode extends PlayMode {
                 this.state = TeachModeState.None;
                 this.removeCar();
                 this.rerenderTeachPanel();
-                this.gameWorld.controls.reset();
+                this.gameWorld.resetCamera();
             } else {
                 this.recording.push({
                     ...this.car.getNetworkInput(this.gameWorld),

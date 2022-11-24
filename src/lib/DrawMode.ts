@@ -157,7 +157,7 @@ export class DrawMode implements Mode {
         this.gameWorld.controls.maxAzimuthAngle = Infinity;
         this.gameWorld.controls.minDistance = 0;
         this.gameWorld.controls.maxDistance = 50;
-        this.gameWorld.controls.reset();
+        this.gameWorld.resetCamera();
 
         this.gameWorld.scene.remove(this.ring);
 

@@ -201,7 +201,7 @@
         bind:checked={mode.chaseFirstCar}
         on:change={(e) => {
             // @ts-ignore
-            if (!e.target.checked) mode.gameWorld.controls.reset();
+            if (!e.target.checked) mode.gameWorld.resetCamera();
         }}
         id="chase-first-toggle"
         class="sr-only peer"
@@ -216,7 +216,7 @@
     <!-- <div class="block text-center ml-2">
         <button
             on:click={() => {
-                mode.gameWorld.controls.reset();
+                mode.gameWorld.resetCamera();
             }}
             class="inline-flex items-center text-center justify-center p-0.5 mb-0 overflow-hidden text-sm font-bold text-gray-900 rounded-full group bg-gradient-to-r from-pink-300 via-purple-300 to-indigo-400 group-hover:from-pink-300 group-hover:via-purple-300 group-hover:to-indigo-400 dark:text-white dark:hover:text-gray-900 focus:ring-4 focus:outline-none focus:ring-red-100 dark:focus:ring-red-400 block mx-auto"
         >

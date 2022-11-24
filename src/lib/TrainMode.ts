@@ -189,7 +189,7 @@ export class TrainMode implements Mode {
     }
 
     activate() {
-        this.gameWorld.controls.reset();
+        this.gameWorld.resetCamera();
     }
 
     deactivate() {
