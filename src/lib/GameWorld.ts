@@ -68,6 +68,15 @@ export class GameWorld {
         this.gameObjects.forEach(obj => obj.syncMeshesToBodies());
         this.timings.physicsEnd = performance.now();
         this.timings.uiStart = performance.now();
+        this.controls.target.x = Math.min(Math.max(this.controls.target.x, -10), 10);
+        this.controls.target.y = Math.min(Math.max(this.controls.target.y, 0), 10);
+        this.controls.target.z = Math.min(Math.max(this.controls.target.z, -10), 10);
+        if (this.camera.position.y < 0) {
+            const posLen = this.camera.position.length();
+            this.camera.position.y = 0;
+            this.camera.position.normalize();
+            this.camera.position.multiplyScalar(posLen);
+        }
         this.controls.update();
         this.cameraPosition.lerp(this.camera.position, 1 - 0.9 ** (delta / 0.016));
         this.cameraQuaternion.slerp(this.camera.quaternion, 1 - 0.9 ** (delta / 0.016));
