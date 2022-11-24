@@ -232,6 +232,7 @@ export class GameWorld {
         const startZ = this.raceTrack.startZ;
         this.camera.position.set(startX, 0, startZ);
         this.camera.position.multiplyScalar(1.5);
+        if (this.camera.position.length() < 4) this.camera.position.setLength(4);
         this.camera.position.y = 3;
         this.controls.minDistance = 0.1;
         this.controls.maxDistance = 20;
