@@ -16,9 +16,9 @@ export default defineConfig({
       },
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'safari-pinned-tab.svg'],
       manifest: {
-        name: 'My Awesome App',
-        short_name: 'MyApp',
-        description: 'My Awesome App description',
+        name: 'Machine Learnin Car Game',
+        short_name: 'ML Car Game',
+        description: 'A game where you can create race tracks and drive a car on these tracks. Then, you can teach a neural network to drive the car based on your input. The cars can also learn to drive by themselves with a genetic algorithm.',
         theme_color: '#131825',
         icons: [
           {
