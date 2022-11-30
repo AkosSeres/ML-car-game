@@ -96,17 +96,24 @@ export class PlayMode implements Mode {
                 }
             });
 
-            document.getElementById("car-rotation-compass").style.transform = `rotate(${Math.atan2(
+            const carRotationCompassElement = document.getElementById("car-rotation-compass");
+            if (carRotationCompassElement) carRotationCompassElement.style.transform = `rotate(${Math.atan2(
                 networkInput.sideAmount,
                 networkInput.forwardAmount
             )}rad)`;
 
             this.completion = networkInput.completed;
-            document.getElementById("completion-text").innerText = (this.completion * 100).toFixed(1) + "%";
-            document.getElementById("completion-bar").style.width = (this.completion * 100) + "%";
+            const completionTextElement = document.getElementById("completion-text");
+            if (completionTextElement) completionTextElement.innerText = (this.completion * 100).toFixed(1) + "%";
+            const completionBar = document.getElementById("completion-bar")
+            if (completionBar) {
+                completionBar.style.width = (this.completion * 100) + "%";
+                completionBar.style.backgroundColor = PlayMode.getCompletionBarColor(this.completion);
+            }
+            const velocityElement = document.getElementById("velocity-element");
+            if (velocityElement) velocityElement.innerText = this.car.getForwardVelocity().toFixed(2);
         }
 
-        if (this.car) document.getElementById("velocity-element").innerText = this.car.getForwardVelocity().toFixed(2);
 
         if (this.chaseMode && this.car) {
             this.gameWorld.controls.target = this.car.getPosition();
@@ -198,5 +205,13 @@ export class PlayMode implements Mode {
 
         document.removeEventListener("keydown", this.keydownHandler);
         document.removeEventListener("keyup", this.keyupHandler);
+    }
+
+    static getCompletionBarColor(completion: number) {
+        if (completion > 0.5) {
+            return `rgb(${Math.floor((1 - completion) * 510)}, 255, 0)`;
+        } else {
+            return `rgb(255, ${Math.floor(completion * 510)}, 0)`;
+        }
     }
 }

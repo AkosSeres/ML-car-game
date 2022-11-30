@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { PlayMode } from "./PlayMode";
+    import { PlayMode } from "./PlayMode";
     import { Tooltip } from "flowbite-svelte";
 
     export let mode: PlayMode;
@@ -19,8 +19,11 @@
     <div class="w-full bg-gray-700 rounded-full h-2.5 mb-3">
         <div
             id="completion-bar"
-            class="bg-gradient-to-r from-[#FF0000] via-[#FF5733] to-[#00FF00] bg-[length:100%] h-2.5 rounded-full transition-[width]"
-            style="width: {mode.completion * 100}%"
+            class="h-2.5 rounded-full transition-[width]"
+            style="width: {mode.completion *
+                100}%; background-color: {PlayMode.getCompletionBarColor(
+                mode.completion
+            )};"
         />
     </div>
 
