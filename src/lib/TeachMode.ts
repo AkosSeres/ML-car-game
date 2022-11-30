@@ -41,6 +41,7 @@ export class TeachMode extends PlayMode {
         this.model = tf.sequential({
             layers: [
                 tf.layers.dense({ inputShape: [this.inputSize], units: this.hiddenLayerSize, activation: 'relu' }),
+                tf.layers.dropout({ rate: 0.2 }),
                 tf.layers.dense({ units: outputSize, activation: 'sigmoid' }),
             ]
         });
