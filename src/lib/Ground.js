@@ -2,8 +2,10 @@ import * as THREE from "three";
 import * as CANNON from "cannon-es";
 import { GameObject } from "./GameObject";
 import { BARRIER_RAYCAST_LAYER } from "./RaceTrack";
+import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils';
 
-const groundMaterial = new THREE.MeshPhongMaterial({ color: 0xffffff });
+const groundMaterial = new THREE.MeshLambertMaterial({ color: 0xffffff /*0x6e4efa*/ });
+const groundFlatMaterial = new THREE.MeshLambertMaterial({ color: 'rgb(18, 24, 38)' });
 
 /**
  * A GameObject that represents the ground. In size in the physics engine is infinite, but in the renderer it has a visible size.
@@ -15,15 +17,26 @@ export class Ground extends GameObject {
      * 
      * @param {number} ylevel The y level of the ground.
      * @param {number} visibleWidth The width of the ground in the renderer.
-     * @param {number} visibleHeight The height of the ground in the renderer.
      */
-    constructor(ylevel = 0, visibleWidth = 100, visibleHeight = 100) {
+    constructor(ylevel = 0, visibleWidth = 100) {
         super();
         this.ylevel = ylevel;
-        const geometry = new THREE.PlaneGeometry(visibleWidth, visibleHeight);
-        const mesh = new THREE.Mesh(geometry, groundMaterial);
+        const boxesGeoms = [];
+        for (let i = -visibleWidth / 2; i < visibleWidth / 2; i += 1) {
+            for (let j = -visibleWidth / 2; j < visibleWidth / 2; j += 1) {
+                const box = new THREE.BoxGeometry(0.97, 0.1, 0.97);
+                box.translate(i, ylevel - 0.05, j);
+                boxesGeoms.push(box);
+            }
+        }
+        const groundGeom = BufferGeometryUtils.mergeBufferGeometries(boxesGeoms);
+        const groundMesh = new THREE.Mesh(groundGeom, groundMaterial);
+        this.meshes.push(groundMesh);
+        boxesGeoms.forEach(geom => geom.dispose());
+        const geometry = new THREE.PlaneGeometry(visibleWidth, visibleWidth);
+        const mesh = new THREE.Mesh(geometry, groundFlatMaterial);
         mesh.rotation.x = -Math.PI / 2;
-        mesh.position.y = ylevel;
+        mesh.position.y = ylevel - 0.02;
         mesh.layers.enable(BARRIER_RAYCAST_LAYER);
         this.mesh = mesh;
         this.meshes.push(mesh);

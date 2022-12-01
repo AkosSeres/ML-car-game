@@ -62,7 +62,7 @@ export class GameWorld {
     /**
      * Updates and renders the world.
      */
-    update(delta) {
+    update(delta: number) {
         this.timings.physicsStart = performance.now();
         this.world.step(delta);
         this.gameObjects.forEach(obj => obj.syncMeshesToBodies());
@@ -130,12 +130,14 @@ export class GameWorld {
      */
     addLighting() {
         this.scene.add(new THREE.AmbientLight(0x404040));
-        const sun = new THREE.DirectionalLight(0xffffff, 0.6);
+        const sun = new THREE.DirectionalLight(0xffffff, 0.9);
         sun.position.set(-1.1, 1, 0.9);
         sun.castShadow = true;
         sun.shadow.mapSize.width = 1024;
         sun.shadow.mapSize.height = 1024;
         this.scene.add(sun);
+
+        this.scene.fog = new THREE.Fog('black', 20, 30);
     }
 
     /**

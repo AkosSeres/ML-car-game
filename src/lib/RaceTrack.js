@@ -21,7 +21,7 @@ const roadMaterial = new THREE.MeshLambertMaterial({
     color: 0x515151,
     wireframe: false,
 });
-const barrierMaterial = new THREE.MeshPhongMaterial({
+const barrierMaterial = new THREE.MeshLambertMaterial({
     color: 0xffea00,
     wireframe: false,
     side: THREE.DoubleSide,
@@ -124,7 +124,7 @@ export class RaceTrack extends GameObject {
             lineMesh.receiveShadow = true;
             lineMesh.castShadow = false;
             lineMesh.position.x = p.x;
-            lineMesh.position.y = p.y;
+            lineMesh.position.y = 0.004;
             lineMesh.position.z = p.z;
             lineMesh.rotateY(Math.atan2(t.x, t.z));
             this.meshes.push(lineMesh);
